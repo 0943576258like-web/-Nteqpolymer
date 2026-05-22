@@ -2334,18 +2334,18 @@
             /* PAGE IMAGES — apply per-section banner images */
             if (d.pageImages) {
               var sectionMap = {
-                about: '#about, #about-page',
-                products: '#products, #products-page',
-                news: '#news, #news-page, #csr',
-                vision: '#vision, #vision-page',
-                structure: '#structure, #organization, #org-chart',
-                executives: '#executives, #leadership',
-                awards: '#awards, #certifications',
-                policy: '#policy, #policies',
-                videos: '#videos, #video-gallery',
-                blog: '#blog, #knowledge',
-                jobs: '#careers, #jobs',
-                contact: '#contact, #contact-page'
+                about: '#about-page, #about',
+                products: '#products-page, #products',
+                news: '#media-page, #csr-page, #news',
+                vision: '#vision-page, #vision',
+                structure: '#structure-page, #structure, #organization',
+                executives: '#executives-page, #executives, #leadership',
+                awards: '#awards-page, #awards, #certifications',
+                policy: '#policy-page, #policy, #policies',
+                videos: '#video-page, #videos, #video-gallery',
+                blog: '#blog-page, #blog, #knowledge',
+                jobs: '#job-page, #careers, #jobs',
+                contact: '#contact-page, #contact'
               };
               Object.keys(d.pageImages).forEach(function(secKey) {
                 var pi = d.pageImages[secKey];
