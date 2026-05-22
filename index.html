@@ -795,6 +795,9 @@
                     <button class="lang-switcher-btn" onclick="toggleLanguage()">
                         <i class="fa-solid fa-globe"></i> <span id="lang-text">TH</span>
                     </button>
+                    <a class="lang-switcher-btn" href="admin.html" style="text-decoration:none; color:var(--color-accent-green); border-color:var(--color-accent-green);">
+                        <i class="fa-solid fa-user-shield"></i> Admin
+                    </a>
                 </div>
             </nav>
         </div>
@@ -852,7 +855,7 @@
                         <i class="fa-solid fa-circle-play" style="color: var(--color-accent-green); margin-right: 8px;"></i> วิดีโอแนะนำ NTEQ POLYMER
                     </h2>
                     <div class="video-frame-container">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/UsnIyScLe-s?si=-0R_je4myBWOYQpc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/ScMzIvxBSi4" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
@@ -1698,28 +1701,28 @@
                         <h3><i class="fa-solid fa-paper-plane" style="color:var(--color-accent-green); margin-right:10px; font-size:18px;"></i>ส่งข้อความถึงเรา</h3>
                         <p>กรอกแบบฟอร์มด้านล่าง ทีมงานของเราจะติดต่อกลับโดยเร็วที่สุด</p>
                     </div>
-                    <form class="input-group" onsubmit="event.preventDefault(); alert('ส่งข้อความสำเร็จแล้ว!');">
+                    <form class="input-group" id="contact-form" onsubmit="return submitContactForm(event)">
                         <div class="input-row">
                             <div class="input-field-wrapper">
                                 <label>ชื่อ-นามสกุล</label>
-                                <input type="text" placeholder="Full Name" required>
+                                <input name="name" type="text" placeholder="Full Name" required>
                             </div>
                             <div class="input-field-wrapper">
                                 <label>อีเมล</label>
-                                <input type="email" placeholder="Email Address" required>
+                                <input name="email" type="email" placeholder="Email Address" required>
                             </div>
                         </div>
                         <div class="input-field-wrapper">
                             <label>เบอร์โทรศัพท์</label>
-                            <input type="tel" placeholder="Phone Number (Optional)">
+                            <input name="phone" type="tel" placeholder="Phone Number (Optional)">
                         </div>
                         <div class="input-field-wrapper">
                             <label>หัวข้อติดต่อ</label>
-                            <input type="text" placeholder="Subject / หัวข้อ" required>
+                            <input name="subject" type="text" placeholder="Subject / หัวข้อ" required>
                         </div>
                         <div class="input-field-wrapper">
                             <label>ข้อความ</label>
-                            <textarea placeholder="ข้อความของคุณ / Your Message..." required></textarea>
+                            <textarea name="message" placeholder="ข้อความของคุณ / Your Message..." required></textarea>
                         </div>
                         <button type="submit" class="btn-gradient" style="justify-content: center; margin-top: 6px;"><i class="fa-solid fa-paper-plane"></i> <span id="btn-send">ส่งข้อความ</span></button>
                     </form>
@@ -2203,6 +2206,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeVideoModal();
         });
+        
     </script>
 
     <!-- VIDEO MODAL -->
@@ -2211,6 +2215,155 @@
             <button onclick="closeVideoModal()" style="position: absolute; top: -50px; right: 0; background: #2ecc71; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#27ae60'" onmouseout="this.style.background='#2ecc71'">✕ ปิด</button>
             <iframe id="videoFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 8px;"></iframe>
         </div>
-    </div>
+
+    <!-- ==================== CMS SYNC (เชื่อมกับ admin.html ผ่าน localStorage) ==================== -->
+    <script>
+    (function(){
+      const KEY='nteq_admin_data_v1';
+      function load(){try{return JSON.parse(localStorage.getItem(KEY))||null}catch{return null}}
+      function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+      function setText(id,v){const el=document.getElementById(id);if(el&&v!=null&&v!=='')el.textContent=v;}
+      function setHTML(id,v){const el=document.getElementById(id);if(el&&v!=null&&v!=='')el.innerHTML=v;}
+
+      function applyCMS(){
+        const d=load();if(!d)return;
+        // SEO
+        if(d.settings){
+          if(d.settings.title)document.title=d.settings.title;
+          const md=document.querySelector('meta[name="description"]');
+          if(!md&&d.settings.desc){const m=document.createElement('meta');m.name='description';m.content=d.settings.desc;document.head.appendChild(m);}
+          else if(md&&d.settings.desc)md.setAttribute('content',d.settings.desc);
+        }
+        // HERO
+        if(d.hero){
+          if(d.hero.title||d.hero.subtitle){
+            setHTML('hero-title-main',(d.hero.title||'')+(d.hero.subtitle?' <br><span>'+d.hero.subtitle+'</span>':''));
+          }
+          setText('hero-sub-main',d.hero.desc);
+          const btn=document.getElementById('btn-explore');
+          if(btn&&d.hero.btn){btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> '+d.hero.btn;}
+          // counters
+          const stats=document.querySelectorAll('.analytics-strip .stat-glass-node');
+          [1,2,3].forEach((i,idx)=>{
+            const n=d.hero['c'+i+'n'], l=d.hero['c'+i+'l'];
+            if(stats[idx]){
+              if(n!=null){const h=stats[idx].querySelector('h2');if(h){h.setAttribute('data-target',n);h.textContent=n;}}
+              if(l)setText('st-'+i,l);
+            }
+          });
+        }
+        // CONTACT
+        if(d.contact){
+          // find map iframe and update if provided
+          if(d.contact.map){const mf=document.querySelector('.map-frame');if(mf)mf.src=d.contact.map;}
+        }
+      }
+
+      // CONTACT FORM submit -> save to messages
+      window.submitContactForm=function(ev){
+        ev.preventDefault();
+        const f=ev.target, fd=new FormData(f);
+        let d=load()||{messages:[]};
+        d.messages=d.messages||[];
+        d.messages.unshift({
+          id:Date.now(),
+          name:fd.get('name'),email:fd.get('email'),phone:fd.get('phone')||'',
+          subject:fd.get('subject'),message:fd.get('message'),
+          date:new Date().toISOString().slice(0,10),status:'unread'
+        });
+        save(d);
+        f.reset();
+        alert('ส่งข้อความสำเร็จแล้ว! ขอบคุณที่ติดต่อเรา');
+      };
+
+      // initial apply + live update across tabs
+      applyCMS();
+      window.addEventListener('storage',(e)=>{if(e.key===KEY)applyCMS();});
+    })();
+    // ==========================================
+// 1. ENGINE ดึงข้อมูลมาแสดงผล (Dynamic Renderer)
+// ==========================================
+const STORAGE_KEY = 'nteq_dynamic_pool_v1';
+
+function loadWebsiteData() {
+    const defaultData = {
+        template: {
+            themeMode: 'cyber-dark', // cyber-dark, clean-light
+            heroLayout: 'grid-carousel', // grid-carousel, full-banner, minimal
+            showVideo: true,
+            showAnalytics: true
+        },
+        images: {
+            heroBackground: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663674906825/bAOkbxAGeGNOfBiD.png',
+            carousel: [
+                'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=800&q=80'
+            ],
+            aboutBanner: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1200&q=80'
+        },
+        content: {
+            heroTitle: 'NTEQ POLYMER — <span>Premium Green Innovation</span>',
+            heroSubtitle: 'มุ่งมั่นสร้างสรรค์นวัตกรรมยางพาราที่เป็นมิตรต่อสิ่งแวดล้อมเพื่ออุตสาหกรรมแห่งอนาคต',
+            stat1_num: '15,000+', stat1_label: 'ตัน / กำลังการผลิตต่อปี',
+            stat2_num: '100%', stat2_label: 'ยางธรรมชาติมาตรฐานสากล',
+            stat3_num: '25+', stat3_label: 'พันธมิตรทางการค้าระดับโลก'
+        }
+    };
+
+    const localData = localStorage.getItem(STORAGE_KEY);
+    return localData ? JSON.parse(localData) : defaultData;
+}
+
+// ฟังก์ชันที่จะถูกเรียกทำงานทันทีเมื่อหน้าเว็บโหลดเสร็จ
+function applyAdminChanges() {
+    const data = loadWebsiteData();
+    
+    // A. จัดการเรื่องรูปภาพ (Images Editor Integration)
+    if (data.images.heroBackground) {
+        document.body.style.backgroundImage = `linear-gradient(135deg, rgba(1,3,2,0.75) 0%, rgba(3,10,5,0.7) 50%, rgba(1,4,2,0.75) 100%), url('${data.images.heroBackground}')`;
+    }
+    
+    // อัปเดตรูปในสไลเดอร์หน้าแรก
+    const sliderImages = document.querySelectorAll('.slider-img-holder img');
+    if (sliderImages.length > 0 && data.images.carousel) {
+        data.images.carousel.forEach((url, index) => {
+            if (sliderImages[index]) sliderImages[index].src = url;
+        });
+    }
+
+    // B. จัดการเนื้อหาข้อความสด (Texts Real-time Override)
+    const heroH1 = document.querySelector('.hero-left-editorial h1');
+    if (heroH1) heroH1.innerHTML = data.content.heroTitle;
+
+    const heroP = document.querySelector('.hero-left-editorial p');
+    if (heroP) heroP.innerText = data.content.heroSubtitle;
+
+    // C. สลับหน้าตาเทมเพลต (Template Swapper Engine)
+    const heroLayoutNode = document.querySelector('.hero-layout-grid');
+    if (heroLayoutNode) {
+        if (data.template.heroLayout === 'minimal') {
+            heroLayoutNode.style.gridTemplateColumns = '1fr';
+            const carouselPart = document.querySelector('.hero-visual-carousel');
+            if (carouselPart) carouselPart.style.display = 'none'; // ซ่อนรูปสไลด์เมื่อเลือกแบบ Minimal
+        } else {
+            heroLayoutNode.style.gridTemplateColumns = '1.1fr 0.9fr';
+            const carouselPart = document.querySelector('.hero-visual-carousel');
+            if (carouselPart) carouselPart.style.display = 'block';
+        }
+    }
+
+    // เปิด-ปิด ส่วนวิดีโอ หรือ ส่วนสถิติตามการตั้งค่าของบล็อก Template
+    const videoSection = document.querySelector('.intro-video-wrapper');
+    if (videoSection) videoSection.style.display = data.template.showVideo ? 'flex' : 'none';
+
+    const analyticsSection = document.querySelector('.analytics-strip');
+    if (analyticsSection) analyticsSection.style.display = data.template.showAnalytics ? 'grid' : 'none';
+}
+
+// รันฟังก์ชันอัปเดตหน้าตาเว็บทันทีเมื่อเข้าชมหน้า index
+document.addEventListener('DOMContentLoaded', applyAdminChanges);
+    </script>
 </body>
 </html>
+
