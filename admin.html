@@ -359,6 +359,13 @@ tbody tr:last-child td{border-bottom:none}
       <!-- ABOUT -->
       <section class="page" id="page-about">
         <div class="page-hero-overlay"><div><p>Corporate Info</p><h2>ข้อมูลบริษัท</h2></div><button class="btn-gradient" onclick="saveAbout()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า About (URL)</label><input id="pi-about-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-about-preview')"></div>
+          <img id="pi-about-preview" class="field img-preview" style="display:none">
+          <div id="pi-about-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('about')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="glass-card">
           <div class="field-row">
             <div class="field"><label>ชื่อบริษัท</label><input id="a-name" type="text"></div>
@@ -379,6 +386,13 @@ tbody tr:last-child td{border-bottom:none}
       <!-- VISION -->
       <section class="page" id="page-vision">
         <div class="page-hero-overlay"><div><p>Vision & Mission</p><h2>วิสัยทัศน์และพันธกิจ</h2></div><button class="btn-gradient" onclick="saveVision()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Vision (URL)</label><input id="pi-vision-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-vision-preview')"></div>
+          <img id="pi-vision-preview" class="field img-preview" style="display:none">
+          <div id="pi-vision-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('vision')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="glass-card">
           <div class="field"><label>วิสัยทัศน์ (Vision)</label><textarea id="v-vision" rows="4"></textarea></div>
           <div class="field"><label>พันธกิจ (Mission)</label><textarea id="v-mission" rows="4"></textarea></div>
@@ -391,6 +405,13 @@ tbody tr:last-child td{border-bottom:none}
       <!-- STRUCTURE -->
       <section class="page" id="page-structure">
         <div class="page-hero-overlay"><div><p>Organization</p><h2>แผนผังองค์กร</h2></div><button class="btn-gradient" onclick="saveStructure()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Structure (URL)</label><input id="pi-structure-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-structure-preview')"></div>
+          <img id="pi-structure-preview" class="field img-preview" style="display:none">
+          <div id="pi-structure-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('structure')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="glass-card">
           <div class="field"><label>คำอธิบายแผนผังองค์กร</label><textarea id="st-intro"></textarea></div>
         </div>
@@ -402,54 +423,117 @@ tbody tr:last-child td{border-bottom:none}
       <!-- EXECUTIVES -->
       <section class="page" id="page-executives">
         <div class="page-hero-overlay"><div><p>Leadership</p><h2>คณะกรรมการบริหาร</h2></div><button class="btn-gradient" onclick="openItem('executives')"><i class="fa-solid fa-plus"></i> เพิ่มผู้บริหาร</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Executives (URL)</label><input id="pi-executives-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-executives-preview')"></div>
+          <img id="pi-executives-preview" class="field img-preview" style="display:none">
+          <div id="pi-executives-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('executives')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ชื่อ - สกุล</th><th>ตำแหน่ง</th><th>อีเมล</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-executives"></tbody></table></div>
       </section>
 
       <!-- AWARDS -->
       <section class="page" id="page-awards">
         <div class="page-hero-overlay"><div><p>Certifications</p><h2>รางวัลและการรับรอง</h2></div><button class="btn-gradient" onclick="openItem('awards')"><i class="fa-solid fa-plus"></i> เพิ่มรางวัล</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Awards (URL)</label><input id="pi-awards-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-awards-preview')"></div>
+          <img id="pi-awards-preview" class="field img-preview" style="display:none">
+          <div id="pi-awards-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('awards')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ชื่อรางวัล</th><th>ปี</th><th>ประเภท</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-awards"></tbody></table></div>
       </section>
 
       <!-- PRODUCTS -->
       <section class="page" id="page-products">
         <div class="page-hero-overlay"><div><p>Catalog</p><h2>ผลิตภัณฑ์</h2></div><button class="btn-gradient" onclick="openItem('products')"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Products (URL)</label><input id="pi-products-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-products-preview')"></div>
+          <img id="pi-products-preview" class="field img-preview" style="display:none">
+          <div id="pi-products-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('products')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>หมวดหมู่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-products"></tbody></table></div>
       </section>
 
       <!-- POLICY -->
       <section class="page" id="page-policy">
         <div class="page-hero-overlay"><div><p>Governance</p><h2>นโยบาย</h2></div><button class="btn-gradient" onclick="openItem('policies')"><i class="fa-solid fa-plus"></i> เพิ่มนโยบาย</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Policy (URL)</label><input id="pi-policy-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-policy-preview')"></div>
+          <img id="pi-policy-preview" class="field img-preview" style="display:none">
+          <div id="pi-policy-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('policy')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ชื่อนโยบาย</th><th>ประเภท</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-policies"></tbody></table></div>
       </section>
 
       <!-- NEWS -->
       <section class="page" id="page-news">
         <div class="page-hero-overlay"><div><p>News & CSR</p><h2>ข่าวสาร / CSR</h2></div><button class="btn-gradient" onclick="openItem('news')"><i class="fa-solid fa-plus"></i> เพิ่มข่าว</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า News (URL)</label><input id="pi-news-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-news-preview')"></div>
+          <img id="pi-news-preview" class="field img-preview" style="display:none">
+          <div id="pi-news-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('news')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>หัวข้อ</th><th>ประเภท</th><th>วันที่</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-news"></tbody></table></div>
       </section>
 
       <!-- VIDEOS -->
       <section class="page" id="page-videos">
         <div class="page-hero-overlay"><div><p>Video Gallery</p><h2>คลังสื่อวิดีโอ</h2></div><button class="btn-gradient" onclick="openItem('videos')"><i class="fa-solid fa-plus"></i> เพิ่มวิดีโอ</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Videos (URL)</label><input id="pi-videos-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-videos-preview')"></div>
+          <img id="pi-videos-preview" class="field img-preview" style="display:none">
+          <div id="pi-videos-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('videos')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ชื่อวิดีโอ</th><th>หมวดหมู่</th><th>YouTube URL</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-videos"></tbody></table></div>
       </section>
 
       <!-- BLOG -->
       <section class="page" id="page-blog">
         <div class="page-hero-overlay"><div><p>Knowledge Base</p><h2>บล็อก / องค์ความรู้</h2></div><button class="btn-gradient" onclick="openItem('blogs')"><i class="fa-solid fa-plus"></i> เพิ่มบทความ</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Blog (URL)</label><input id="pi-blog-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-blog-preview')"></div>
+          <img id="pi-blog-preview" class="field img-preview" style="display:none">
+          <div id="pi-blog-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('blog')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>หัวข้อ</th><th>หมวดหมู่</th><th>วันที่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-blogs"></tbody></table></div>
       </section>
 
       <!-- JOBS -->
       <section class="page" id="page-jobs">
         <div class="page-hero-overlay"><div><p>Careers</p><h2>ตำแหน่งงาน</h2></div><button class="btn-gradient" onclick="openItem('jobs')"><i class="fa-solid fa-plus"></i> เพิ่มตำแหน่ง</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Jobs (URL)</label><input id="pi-jobs-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-jobs-preview')"></div>
+          <img id="pi-jobs-preview" class="field img-preview" style="display:none">
+          <div id="pi-jobs-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('jobs')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>ประเภท</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-jobs"></tbody></table></div>
       </section>
 
       <!-- CONTACT -->
       <section class="page" id="page-contact">
         <div class="page-hero-overlay"><div><p>Contact Info</p><h2>ข้อมูลการติดต่อ</h2></div><button class="btn-gradient" onclick="saveContact()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-image"></i> รูปภาพหน้านี้</h3>
+          <div class="field"><label>รูปแบนเนอร์หน้า Contact (URL)</label><input id="pi-contact-banner" type="text" placeholder="https://..." oninput="previewImg(this,'pi-contact-preview')"></div>
+          <img id="pi-contact-preview" class="field img-preview" style="display:none">
+          <div id="pi-contact-images" class="grid grid-3" style="margin-top:14px"></div>
+          <div style="margin-top:10px"><button class="btn sm" onclick="addPageImage('contact')"><i class="fa-solid fa-plus"></i> เพิ่มรูปภาพ</button></div>
+        </div>
         <div class="glass-card">
           <div class="field"><label>ที่อยู่</label><textarea id="c-addr"></textarea></div>
           <div class="field-row">
@@ -483,7 +567,20 @@ tbody tr:last-child td{border-bottom:none}
 
       <!-- TEMPLATES -->
       <section class="page" id="page-templates">
-        <div class="page-hero-overlay"><div><p>Design</p><h2>จัดการเทมเพลต</h2></div><button class="btn-gradient" onclick="saveTemplateSettings()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="page-hero-overlay"><div><p>Design</p><h2>จัดการเทมเพลต</h2></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn" onclick="openCustomTemplate()"><i class="fa-solid fa-plus"></i> สร้างเทมเพลตใหม่</button>
+            <button class="btn-gradient" onclick="saveTemplateSettings()"><i class="fa-solid fa-check"></i> บันทึก</button>
+          </div>
+        </div>
+
+        <!-- CUSTOM TEMPLATES LIST -->
+        <div class="glass-card" style="margin-bottom:22px">
+          <h3><i class="fa-solid fa-swatchbook"></i> เทมเพลตทั้งหมด</h3>
+          <p style="font-size:12px;color:var(--color-text-muted);margin-bottom:16px">เลือกเทมเพลตที่ต้องการใช้งาน หรือสร้างเทมเพลตใหม่</p>
+          <div class="grid grid-3" id="custom-templates-grid"></div>
+        </div>
+
         <div class="glass-card" style="margin-bottom:22px">
           <h3><i class="fa-solid fa-wand-magic-sparkles"></i> เลย์เอาต์หน้าแรก (Hero Layout)</h3>
           <div class="grid grid-3" id="tpl-hero-layouts">
@@ -607,6 +704,8 @@ const defaultData=()=>({
   blogs:[{id:1,title:'ยางพาราธรรมชาติคืออะไร?',cat:'knowledge',date:'2025-01-10',status:'published',content:'บทความเกี่ยวกับยางพาราธรรมชาติ...',image:''},{id:2,title:'กระบวนการผลิตยาง TSR',cat:'production',date:'2025-02-15',status:'published',content:'บทความเกี่ยวกับกระบวนการผลิต...',image:''}],
   jobs:[{id:1,title:'วิศวกรเคมี',dept:'R&D',type:'full-time',status:'open',desc:''},{id:2,title:'ช่างเทคนิคการผลิต',dept:'Production',type:'full-time',status:'open',desc:''}],
   gallery:[{id:1,url:'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=800&q=80',name:'โรงงานผลิต',section:'hero'},{id:2,url:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',name:'เทคโนโลยี',section:'hero'},{id:3,url:'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=800&q=80',name:'ผลิตภัณฑ์',section:'hero'}],
+  pageImages:{about:{banner:'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200',images:[]},products:{banner:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200',images:[]},news:{banner:'',images:[]},vision:{banner:'',images:[]},structure:{banner:'',images:[]},executives:{banner:'',images:[]},awards:{banner:'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1200',images:[]},policy:{banner:'',images:[]},videos:{banner:'',images:[]},blog:{banner:'',images:[]},jobs:{banner:'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200',images:[]},contact:{banner:'',images:[]}},
+  customTemplates:[{id:1,name:'Default Green',desc:'ธีมเขียวเริ่มต้นของ NTEQ POLYMER',heroLayout:'grid-carousel',accentColor:'#2ecc71',bgStyle:'dark',showVideo:true,showAnalytics:true,showCards:true,showLine:true,isActive:true},{id:2,name:'Blue Ocean',desc:'ธีมสีน้ำเงินสไตล์มหาสมุทร',heroLayout:'full-banner',accentColor:'#3498db',bgStyle:'dark',showVideo:true,showAnalytics:true,showCards:true,showLine:true,isActive:false},{id:3,name:'Minimal Clean',desc:'ธีมเรียบง่าย โทนสีขาว',heroLayout:'minimal',accentColor:'#2ecc71',bgStyle:'light',showVideo:false,showAnalytics:false,showCards:false,showLine:false,isActive:false}],
   messages:[],
   users:DEFAULT_USERS,
   meta:{lastSave:null}
@@ -695,6 +794,8 @@ function renderAll(){
   renderTable('blogs',r=>`<td><b>${esc(r.title)}</b></td><td>${esc(r.cat)}</td><td>${esc(r.date)}</td><td>${badge(r.status)}</td>`);
   renderMessages();
   renderGallery();
+  renderPageImages();
+  renderCustomTemplates();
   updateStats();
   updateMeta();
 }
@@ -760,7 +861,7 @@ function saveTemplateSettings(){
   data.templateConfig.showLine=document.getElementById('tpl-line').value==='true';
   const pages=['vision','structure','awards','policy','videos','blog'];
   pages.forEach(p=>{data.templateConfig['page'+p.charAt(0).toUpperCase()+p.slice(1)]=document.getElementById('tpl-page-'+p).value==='true';});
-  saveData();toast('บันทึกเทมเพลตสำเร็จ');
+  savePageImages();toast('บันทึกเทมเพลตสำเร็จ');
 }
 
 /* =============== SAVE SECTIONS =============== */
@@ -775,20 +876,20 @@ function saveHero(){
 function saveAbout(){
   for(const k of ['name','slogan','about','banner','employees'])data.about[k]=document.getElementById('a-'+k).value;
   data.about.year=Number(document.getElementById('a-year').value)||null;
-  saveData();toast('บันทึกข้อมูลบริษัทสำเร็จ');
+  savePageImages();toast('บันทึกข้อมูลบริษัทสำเร็จ');
 }
 function saveVision(){
   data.vision=data.vision||{};
   data.vision.vision=document.getElementById('v-vision').value;
   data.vision.mission=document.getElementById('v-mission').value;
-  saveData();toast('บันทึกวิสัยทัศน์สำเร็จ');
+  savePageImages();toast('บันทึกวิสัยทัศน์สำเร็จ');
 }
 function saveStructure(){
   data.structure=data.structure||{};
   data.structure.intro=document.getElementById('st-intro').value;
-  saveData();toast('บันทึกแผนผังองค์กรสำเร็จ');
+  savePageImages();toast('บันทึกแผนผังองค์กรสำเร็จ');
 }
-function saveContact(){for(const k of ['addr','tel','fax','email','web','fb','line','map'])data.contact[k]=document.getElementById('c-'+k).value;saveData();toast('บันทึกการติดต่อสำเร็จ');}
+function saveContact(){for(const k of ['addr','tel','fax','email','web','fb','line','map'])data.contact[k]=document.getElementById('c-'+k).value;savePageImages();toast('บันทึกการติดต่อสำเร็จ');}
 function saveSettings(){for(const k of ['title','desc','kw','lang','maint','ga','lineurl'])data.settings[k]=document.getElementById('set-'+k).value;saveData();toast('บันทึกการตั้งค่าสำเร็จ');}
 function saveImageSettings(){
   data.imageSettings=data.imageSettings||{};
@@ -802,6 +903,118 @@ function previewImg(input,previewId){
   if(!preview)return;
   if(input.value){preview.src=input.value;preview.style.display='block';}
   else preview.style.display='none';
+}
+
+/* =============== PAGE IMAGES =============== */
+const PAGE_IMAGE_SECTIONS=['about','products','news','vision','structure','executives','awards','policy','videos','blog','jobs','contact'];
+function renderPageImages(){
+  PAGE_IMAGE_SECTIONS.forEach(sec=>{
+    const pi=data.pageImages&&data.pageImages[sec]?data.pageImages[sec]:{banner:'',images:[]};
+    const bannerEl=document.getElementById('pi-'+sec+'-banner');
+    if(bannerEl){bannerEl.value=pi.banner||'';const prev=document.getElementById('pi-'+sec+'-preview');if(prev){if(pi.banner){prev.src=pi.banner;prev.style.display='block';}else prev.style.display='none';}}
+    const grid=document.getElementById('pi-'+sec+'-images');
+    if(grid){
+      const imgs=pi.images||[];
+      if(!imgs.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--color-text-muted);font-size:12px">ยังไม่มีรูปภาพเพิ่มเติม</div>';}
+      else{grid.innerHTML=imgs.map((img,idx)=>'<div class="img-card"><img src="'+esc(img.url)+'" alt="'+esc(img.alt||img.name||'')+'" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><rect fill=%22%23111%22 width=%22200%22 height=%22140%22/><text fill=%22%23555%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Image</text></svg>\'"><div class="img-info"><span title="'+esc(img.alt||img.name||'')+'">'+esc(img.alt||img.name||'Image '+(idx+1))+'</span><div class="row-actions"><button onclick="editPageImage(\''+sec+'\','+idx+')"><i class="fa-solid fa-pen"></i></button><button class="del" onclick="deletePageImage(\''+sec+'\','+idx+')"><i class="fa-solid fa-trash"></i></button></div></div></div>').join('');}
+    }
+  });
+}
+function savePageImages(){
+  data.pageImages=data.pageImages||{};
+  PAGE_IMAGE_SECTIONS.forEach(sec=>{
+    const bannerEl=document.getElementById('pi-'+sec+'-banner');
+    if(bannerEl){data.pageImages[sec]=data.pageImages[sec]||{banner:'',images:[]};data.pageImages[sec].banner=bannerEl.value;}
+  });
+  saveData();
+}
+function addPageImage(sec){
+  const url=prompt('URL รูปภาพ:');if(!url)return;
+  const alt=prompt('คำอธิบายรูป (alt text):','');
+  data.pageImages=data.pageImages||{};
+  data.pageImages[sec]=data.pageImages[sec]||{banner:'',images:[]};
+  data.pageImages[sec].images.push({url:url,alt:alt||'',name:alt||'Image'});
+  saveData();renderPageImages();toast('เพิ่มรูปภาพสำเร็จ');
+}
+function editPageImage(sec,idx){
+  const pi=data.pageImages&&data.pageImages[sec]?data.pageImages[sec]:{images:[]};
+  const img=pi.images[idx];if(!img)return;
+  const url=prompt('URL รูปภาพ:',img.url);if(!url)return;
+  const alt=prompt('คำอธิบายรูป (alt text):',img.alt||'');
+  data.pageImages[sec].images[idx]={url:url,alt:alt||'',name:alt||'Image'};
+  saveData();renderPageImages();toast('แก้ไขรูปภาพสำเร็จ');
+}
+function deletePageImage(sec,idx){
+  if(!confirm('ลบรูปภาพนี้?'))return;
+  data.pageImages[sec].images.splice(idx,1);
+  saveData();renderPageImages();toast('ลบรูปภาพแล้ว');
+}
+
+/* =============== CUSTOM TEMPLATES =============== */
+function renderCustomTemplates(){
+  const grid=document.getElementById('custom-templates-grid');if(!grid)return;
+  const templates=data.customTemplates||[];
+  if(!templates.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--color-text-muted)">ยังไม่มีเทมเพลต — กดปุ่ม "สร้างเทมเพลตใหม่" เพื่อเริ่มต้น</div>';return;}
+  grid.innerHTML=templates.map(t=>{
+    const iconMap={'grid-carousel':'fa-solid fa-table-columns','full-banner':'fa-solid fa-panorama','minimal':'fa-solid fa-align-left'};
+    const icon=iconMap[t.heroLayout]||'fa-solid fa-palette';
+    const colorDot='<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:'+(t.accentColor||'#2ecc71')+';margin-right:6px;vertical-align:middle"></span>';
+    return '<div class="tpl-card'+(t.isActive?' selected':'')+'" onclick="activateTemplate('+t.id+')" style="position:relative">'+
+      (t.isActive?'<div style="position:absolute;top:8px;right:8px"><span class="badge green">ACTIVE</span></div>':'')+
+      '<i class="'+icon+'" style="color:'+(t.accentColor||'var(--color-accent-green)')+';"></i>'+
+      '<h4>'+colorDot+esc(t.name)+'</h4>'+
+      '<p>'+esc(t.desc||'')+'</p>'+
+      '<p style="margin-top:8px;font-size:10px;color:var(--color-text-muted)">Layout: '+esc(t.heroLayout||'grid-carousel')+' | Style: '+esc(t.bgStyle||'dark')+'</p>'+
+      '<div class="row-actions" style="justify-content:center;margin-top:10px" onclick="event.stopPropagation()">'+
+        '<button onclick="openCustomTemplate('+t.id+')"><i class="fa-solid fa-pen"></i></button>'+
+        '<button onclick="duplicateTemplate('+t.id+')"><i class="fa-solid fa-copy"></i></button>'+
+        '<button class="del" onclick="deleteTemplate('+t.id+')"><i class="fa-solid fa-trash"></i></button>'+
+      '</div></div>';
+  }).join('');
+}
+function activateTemplate(id){
+  data.customTemplates=(data.customTemplates||[]).map(t=>({...t,isActive:t.id===id}));
+  const active=(data.customTemplates||[]).find(t=>t.id===id);
+  if(active){
+    data.templateConfig=data.templateConfig||{};
+    data.templateConfig.heroLayout=active.heroLayout||'grid-carousel';
+    data.templateConfig.showVideo=active.showVideo!==false;
+    data.templateConfig.showAnalytics=active.showAnalytics!==false;
+    data.templateConfig.showCards=active.showCards!==false;
+    data.templateConfig.showLine=active.showLine!==false;
+    if(active.accentColor)data.templateConfig.accentColor=active.accentColor;
+    if(active.bgStyle)data.templateConfig.bgStyle=active.bgStyle;
+  }
+  saveData();renderAll();toast('เปิดใช้เทมเพลต: '+(active?active.name:''));
+}
+function openCustomTemplate(id){
+  const existing=id?(data.customTemplates||[]).find(t=>t.id===id):null;
+  _editing={name:'_customTemplate',id:id||null};
+  document.getElementById('modal-title').textContent=(existing?'แก้ไข':'สร้าง')+'เทมเพลตใหม่';
+  document.getElementById('modal-sub').textContent='กำหนดค่าเทมเพลตตามต้องการ';
+  const v=existing||{name:'',desc:'',heroLayout:'grid-carousel',accentColor:'#2ecc71',bgStyle:'dark',showVideo:true,showAnalytics:true,showCards:true,showLine:true};
+  document.getElementById('modal-body').innerHTML=
+    '<div class="field"><label>ชื่อเทมเพลต *</label><input type="text" data-k="name" value="'+esc(v.name)+'"></div>'+
+    '<div class="field"><label>คำอธิบาย</label><input type="text" data-k="desc" value="'+esc(v.desc||'')+'"></div>'+
+    '<div class="field"><label>Hero Layout</label><select data-k="heroLayout"><option value="grid-carousel"'+(v.heroLayout==='grid-carousel'?' selected':'')+'>Grid + Carousel</option><option value="full-banner"'+(v.heroLayout==='full-banner'?' selected':'')+'>Full Banner</option><option value="minimal"'+(v.heroLayout==='minimal'?' selected':'')+'>Minimal</option></select></div>'+
+    '<div class="field-row"><div class="field"><label>สีเน้น (Accent Color)</label><input type="color" data-k="accentColor" value="'+(v.accentColor||'#2ecc71')+'"></div>'+
+    '<div class="field"><label>สไตล์พื้นหลัง</label><select data-k="bgStyle"><option value="dark"'+(v.bgStyle==='dark'?' selected':'')+'>Dark (มืด)</option><option value="light"'+(v.bgStyle==='light'?' selected':'')+'>Light (สว่าง)</option><option value="gradient"'+(v.bgStyle==='gradient'?' selected':'')+'>Gradient</option></select></div></div>'+
+    '<div class="field"><label>แสดงวิดีโอแนะนำ</label><select data-k="showVideo"><option value="true"'+(v.showVideo!==false?' selected':'')+'>แสดง</option><option value="false"'+(v.showVideo===false?' selected':'')+'>ซ่อน</option></select></div>'+
+    '<div class="field"><label>แสดงแถบสถิติ</label><select data-k="showAnalytics"><option value="true"'+(v.showAnalytics!==false?' selected':'')+'>แสดง</option><option value="false"'+(v.showAnalytics===false?' selected':'')+'>ซ่อน</option></select></div>'+
+    '<div class="field"><label>แสดง Products Cards</label><select data-k="showCards"><option value="true"'+(v.showCards!==false?' selected':'')+'>แสดง</option><option value="false"'+(v.showCards===false?' selected':'')+'>ซ่อน</option></select></div>'+
+    '<div class="field"><label>แสดงปุ่ม Line</label><select data-k="showLine"><option value="true"'+(v.showLine!==false?' selected':'')+'>แสดง</option><option value="false"'+(v.showLine===false?' selected':'')+'>ซ่อน</option></select></div>';
+  document.getElementById('modal-bg').classList.add('show');
+}
+function duplicateTemplate(id){
+  const src=(data.customTemplates||[]).find(t=>t.id===id);if(!src)return;
+  const copy={...src,id:Date.now(),name:src.name+' (สำเนา)',isActive:false};
+  data.customTemplates.push(copy);
+  saveData();renderCustomTemplates();toast('คัดลอกเทมเพลตสำเร็จ');
+}
+function deleteTemplate(id){
+  if(!confirm('ลบเทมเพลตนี้?'))return;
+  data.customTemplates=(data.customTemplates||[]).filter(t=>t.id!==id);
+  saveData();renderCustomTemplates();toast('ลบเทมเพลตแล้ว');
 }
 
 /* =============== MODAL CRUD =============== */
@@ -841,6 +1054,15 @@ function closeModal(){document.getElementById('modal-bg').classList.remove('show
 function saveModal(){
   const {name,id}=_editing;const obj={};
   document.querySelectorAll('#modal-body [data-k]').forEach(el=>obj[el.dataset.k]=el.value);
+  if(name==='_customTemplate'){
+    if(!obj.name){alert('กรุณากรอกชื่อเทมเพลต');return;}
+    obj.showVideo=obj.showVideo==='true';obj.showAnalytics=obj.showAnalytics==='true';
+    obj.showCards=obj.showCards==='true';obj.showLine=obj.showLine==='true';
+    data.customTemplates=data.customTemplates||[];
+    if(id){const i=data.customTemplates.findIndex(t=>t.id===id);if(i>=0){obj.isActive=data.customTemplates[i].isActive;data.customTemplates[i]={...data.customTemplates[i],...obj};}}
+    else{obj.id=Date.now();obj.isActive=false;data.customTemplates.push(obj);}
+    saveData();renderAll();closeModal();toast(id?'แก้ไขเทมเพลตสำเร็จ':'สร้างเทมเพลตสำเร็จ');return;
+  }
   const schema=SCHEMAS[name];
   for(const f of schema)if(f.req&&!obj[f.k]){alert('กรุณากรอก '+f.l);return;}
   if(obj.order)obj.order=Number(obj.order)||0;
