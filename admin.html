@@ -15,7 +15,7 @@
   --color-border-glass:rgba(46,204,113,0.15);
   --color-accent-green:#2ecc71;
   --color-accent-glow:rgba(46,204,113,0.35);
-  --color-text-main:#f3f4f6; 
+  --color-text-main:#f3f4f6;
   --color-text-muted:#8ea485;
   --color-danger:#e74c3c;
   --font-display:'Plus Jakarta Sans','Sarabun',sans-serif;
@@ -409,6 +409,83 @@ tbody tr:last-child td{border-bottom:none}
           <p style="color:var(--color-text-muted);font-size:13.5px;margin-bottom:18px;line-height:1.7">ล้างข้อมูลทั้งหมดและคืนค่าเริ่มต้น การกระทำนี้ไม่สามารถย้อนกลับได้</p>
           <button class="btn danger" onclick="resetAll()"><i class="fa-solid fa-trash"></i> ล้างข้อมูลทั้งหมด</button>
         </div>
+        <!-- content -->
+         <div class="modern-glass-card" style="margin-top: 30px;">
+    <div class="contact-form-header">
+        <h3><i class="fa-solid fa-wand-magic-sparkles" style="color: #2ecc71;"></i> ระบบจัดการ Template และรูปภาพอัจฉริยะ</h3>
+        <p>ปรับแต่งรูปพื้นหลัง เลย์เอาต์ และข้อมูลตัวหนังสือในหน้าหลักได้ทันทีโดยไม่ต้องแก้ไขโค้ด</p>
+    </div>
+
+    <form id="admin-config-form" onsubmit="saveWebConfig(event)" class="input-group">
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>รูปแบบเลย์เอาต์หน้าแรก (Template Layout)</label>
+                <select id="cfg-layout">
+                    <option value="grid-carousel">แบบมาตรฐาน (เนื้อหาคู่สไลด์รูปภาพคาร์เซล)</option>
+                    <option value="minimal">แบบมินิมอล (เน้นข้อความกว้างเดี่ยว ซ่อนสไลด์ขวา)</option>
+                </select>
+            </div>
+            <div class="input-field-wrapper">
+                <label>ธีมสีหลักของระบบ (Theme Style)</label>
+                <select id="cfg-theme">
+                    <option value="cyber-dark">Premium Cyber Dark Green (ธีมเขียว-มืด เรืองแสง)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>การแสดงส่วนวิดีโอแนะนำบริษัท</label>
+                <select id="cfg-video">
+                    <option value="true">เปิดการแสดงผล (Show)</option>
+                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
+                </select>
+            </div>
+            <div class="input-field-wrapper">
+                <label>การแสดงแถบตัวเลขอาร์เรย์สถิติ (Analytics Strip)</label>
+                <select id="cfg-analytics">
+                    <option value="true">เปิดการแสดงผล (Show)</option>
+                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
+            <h4><i class="fa-solid fa-image"></i> การจัดการรูปภาพในเว็บไซต์ (Image Asset Links)</h4>
+        </div>
+        <div class="input-field-wrapper">
+            <label>ลิงก์รูปภาพพื้นหลังสุดพรีเมียม (Main Wallpaper URL)</label>
+            <input type="text" id="cfg-bg-url" placeholder="วางลิงก์รูปภาพ https://...">
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>รูปสไลด์ที่ 1 (Carousel Image 1)</label>
+                <input type="text" id="cfg-c1-url" placeholder="ลิงก์รูปสไลด์ตัวที่หนึ่ง">
+            </div>
+            <div class="input-field-wrapper">
+                <label>รูปสไลด์ที่ 2 (Carousel Image 2)</label>
+                <input type="text" id="cfg-c2-url" placeholder="ลิงก์รูปสไลด์ตัวที่สอง">
+            </div>
+        </div>
+
+        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
+            <h4><i class="fa-solid fa-file-lines"></i> แก้ไขเนื้อหาข้อความหลัก (Hero Content)</h4>
+        </div>
+        <div class="input-field-wrapper">
+            <label>หัวข้อเด่นหน้าแรก (รองรับแท็กสปันสีเขียวเรืองแสงด้วยการใส่ <span>ข้อความ</span>)</label>
+            <input type="text" id="cfg-hero-title">
+        </div>
+        <div class="input-field-wrapper">
+            <label>คำอธิบายย่อรายละเอียดบริษัท (Hero Subtitle)</label>
+            <textarea id="cfg-hero-subtitle"></textarea>
+        </div>
+
+        <button type="submit" class="btn-gradient" style="margin-top: 15px; width: 100%; justify-content: center;">
+            <i class="fa-solid fa-floppy-disk"></i> บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมด
+        </button>
+    </form>
+</div>
       </section>
 
     </main>
@@ -590,6 +667,93 @@ function toast(m){const t=document.getElementById('toast');document.getElementBy
 
 /* Sync from other tabs (index.html submitting forms) */
 window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){data=loadData();if(document.getElementById('app').style.display==='block')renderAll();}});
+/* ==========================================================================
+   INTEGRATED DYNAMIC CONTENT & TEMPLATE MANAGEMENT ENGINE
+   ========================================================================== */
+
+// ใช้คีย์หลักตัวเดียวกับระบบหลังบ้านเดิมเพื่อให้ข้อมูลเซฟรวมกันไม่กระจัดกระจาย
+const DYNAMIC_KEY = 'nteq_platform_data';
+
+// ฟังก์ชันดึงค่าปัจจุบันที่ Admin เคยตั้งไว้ มาใส่ในกล่อง Form ตอนเปิดหน้าเว็บ
+function loadCurrentConfigToForm() {
+    const localRaw = localStorage.getItem(DYNAMIC_KEY);
+    if (!localRaw) return;
+    
+    try {
+        const fullData = JSON.parse(localRaw);
+        // เช็คว่ามีออบเจกต์โครงสร้างเว็บอยู่ไหม ถ้าไม่มีให้ข้าม
+        if (!fullData.webConfig) return;
+        
+        const cfg = fullData.webConfig;
+        
+        // คืนค่าไปยังฟิลด์กรอกข้อมูลของ Admin
+        if(document.getElementById('cfg-layout') && cfg.template) document.getElementById('cfg-layout').value = cfg.template.heroLayout;
+        if(document.getElementById('cfg-video') && cfg.template) document.getElementById('cfg-video').value = cfg.template.showVideo.toString();
+        if(document.getElementById('cfg-analytics') && cfg.template) document.getElementById('cfg-analytics').value = cfg.template.showAnalytics.toString();
+        
+        if(document.getElementById('cfg-bg-url') && cfg.images) document.getElementById('cfg-bg-url').value = cfg.images.heroBackground || '';
+        if(document.getElementById('cfg-c1-url') && cfg.images?.carousel) document.getElementById('cfg-c1-url').value = cfg.images.carousel[0] || '';
+        if(document.getElementById('cfg-c2-url') && cfg.images?.carousel) document.getElementById('cfg-c2-url').value = cfg.images.carousel[1] || '';
+        
+        if(document.getElementById('cfg-hero-title') && cfg.content) document.getElementById('cfg-hero-title').value = cfg.content.heroTitle || '';
+        if(document.getElementById('cfg-hero-subtitle') && cfg.content) document.getElementById('cfg-hero-subtitle').value = cfg.content.heroSubtitle || '';
+    } catch(e) {
+        console.error("Error parsing configuration data:", e);
+    }
+}
+
+// ฟังก์ชันเซฟค่าลงฐานข้อมูลร่วมกัน (ไม่ให้ทับข้อมูลกล่องข้อความ Inbox เดิมที่มีอยู่)
+function saveWebConfig(event) {
+    event.preventDefault();
+    
+    // โหลดข้อมูลเก่าทั้งหมดขึ้นมาก่อน (เผื่อมีคิวข้อความที่ลูกค้าส่งเข้ามา)
+    let fullData = {};
+    const localRaw = localStorage.getItem(DYNAMIC_KEY);
+    if (localRaw) {
+        try { fullData = JSON.parse(localRaw); } catch(e) { fullData = {}; }
+    }
+    
+    // ฝังโครงสร้างหน้าเว็บ (webConfig) เพิ่มเติมเข้าไปในออบเจกต์หลัก
+    fullData.webConfig = {
+        template: {
+            heroLayout: document.getElementById('cfg-layout').value,
+            showVideo: document.getElementById('cfg-video').value === 'true',
+            showAnalytics: document.getElementById('cfg-analytics').value === 'true'
+        },
+        images: {
+            heroBackground: document.getElementById('cfg-bg-url').value,
+            carousel: [
+                document.getElementById('cfg-c1-url').value,
+                document.getElementById('cfg-c2-url').value
+            ]
+        },
+        content: {
+            heroTitle: document.getElementById('cfg-hero-title').value,
+            heroSubtitle: document.getElementById('cfg-hero-subtitle').value
+        }
+    };
+
+    // บันทึกกลับลงฐานข้อมูล LocalStorage
+    localStorage.setItem(DYNAMIC_KEY, JSON.stringify(fullData));
+    
+    // ใช้ระบบ Toast แจ้งเตือนเดิมของหน้าแอดมินที่มีอยู่แล้ว
+    if(typeof toast === 'function') {
+        toast('บันทึกเทมเพลตและอัปเดตรูปภาพเรียบร้อยแล้ว!');
+    } else {
+        alert('บันทึกข้อมูลเรียบร้อยแล้ว!');
+    }
+}
+
+// ตรวจสอบตัวดักจับ Event โหลดหน้าเพจ (หากของเก่ามี window.onload ให้ย้ายมาพ่วงที่นี่แทน)
+document.addEventListener('DOMContentLoaded', () => {
+    // โหลดข้อมูลฟอร์มดีไซน์
+    loadCurrentConfigToForm();
+    
+    // พ่วงเรียกฟังก์ชันดั้งเดิมของหน้า Admin (เช่น โหลดตารางข้อความ inbox ถ้ามี)
+    if(typeof renderAll === 'function') {
+        renderAll();
+    }
+});
 </script>
 </body>
 </html>
