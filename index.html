@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="file:///C:/Users/natthawut/Pictures/01.png"></script>
+    <!-- Local asset reference removed -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 
     <style>
@@ -1698,28 +1698,28 @@
                         <h3><i class="fa-solid fa-paper-plane" style="color:var(--color-accent-green); margin-right:10px; font-size:18px;"></i>ส่งข้อความถึงเรา</h3>
                         <p>กรอกแบบฟอร์มด้านล่าง ทีมงานของเราจะติดต่อกลับโดยเร็วที่สุด</p>
                     </div>
-                    <form class="input-group" onsubmit="event.preventDefault(); alert('ส่งข้อความสำเร็จแล้ว!');">
+                    <form class="input-group" onsubmit="submitContactForm(event)">
                         <div class="input-row">
                             <div class="input-field-wrapper">
                                 <label>ชื่อ-นามสกุล</label>
-                                <input type="text" placeholder="Full Name" required>
+                                <input type="text" name="name" placeholder="Full Name" required>
                             </div>
                             <div class="input-field-wrapper">
                                 <label>อีเมล</label>
-                                <input type="email" placeholder="Email Address" required>
+                                <input type="email" name="email" placeholder="Email Address" required>
                             </div>
                         </div>
                         <div class="input-field-wrapper">
                             <label>เบอร์โทรศัพท์</label>
-                            <input type="tel" placeholder="Phone Number (Optional)">
+                            <input type="tel" name="phone" placeholder="Phone Number (Optional)">
                         </div>
                         <div class="input-field-wrapper">
                             <label>หัวข้อติดต่อ</label>
-                            <input type="text" placeholder="Subject / หัวข้อ" required>
+                            <input type="text" name="subject" placeholder="Subject / หัวข้อ" required>
                         </div>
                         <div class="input-field-wrapper">
                             <label>ข้อความ</label>
-                            <textarea placeholder="ข้อความของคุณ / Your Message..." required></textarea>
+                            <textarea name="message" placeholder="ข้อความของคุณ / Your Message..." required></textarea>
                         </div>
                         <button type="submit" class="btn-gradient" style="justify-content: center; margin-top: 6px;"><i class="fa-solid fa-paper-plane"></i> <span id="btn-send">ส่งข้อความ</span></button>
                     </form>
@@ -2203,50 +2203,156 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeVideoModal();
         });
-        function applyAdminRealtimeConfig() {
-    const localRaw = localStorage.getItem('nteq_platform_data');
-    if (!localRaw) return;
-    try {
-        const fullData = JSON.parse(localRaw);
-        const cfg = fullData.webConfig;
-        if (!cfg) return;
+        /* ==================== CMS SYNC ENGINE (admin.html <-> index.html via localStorage) ==================== */
+        (function(){
+          var KEY = 'nteq_admin_data_v1';
+          function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch(e) { return null; } }
+          function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
 
-        // 1. เปลี่ยนภาพพื้นหลัง Wallpaper
-        if (cfg.images?.heroBackground) {
-            const heroSection = document.getElementById('home');
-            if(heroSection) heroSection.style.backgroundImage = `linear-gradient(135deg, rgba(1,3,2,0.85) 0%, rgba(3,10,5,0.8) 50%, rgba(1,4,2,0.85) 100%), url('${cfg.images.heroBackground}')`;
-        }
-        // 2. เปลี่ยนรูปใน Slider
-        const sliderImages = document.querySelectorAll('.hero-visual-carousel img, .slider-container img');
-        if (sliderImages.length > 0 && cfg.images?.carousel) {
-            cfg.images.carousel.forEach((url, idx) => { if (sliderImages[idx] && url) sliderImages[idx].src = url; });
-        }
-        // 3. เปลี่ยนข้อความพาดหัว
-        const mainTitle = document.querySelector('.hero-left-editorial h1, .hero-content h1');
-        if (mainTitle && cfg.content?.heroTitle) mainTitle.innerHTML = cfg.content.heroTitle;
-        const subTitle = document.querySelector('.hero-left-editorial p, .hero-content p');
-        if (subTitle && cfg.content?.heroSubtitle) subTitle.innerText = cfg.content.heroSubtitle;
-        // 4. สลับรูปแบบ Layout (หน้าคู่ / เต็มจอ)
-        const layoutContainer = document.querySelector('.hero-layout-grid');
-        if (layoutContainer && cfg.template) {
-            if (cfg.template.heroLayout === 'minimal') {
-                layoutContainer.style.gridTemplateColumns = '1fr';
-                const rightSide = document.querySelector('.hero-visual-carousel');
-                if(rightSide) rightSide.style.display = 'none';
-            } else {
-                layoutContainer.style.gridTemplateColumns = '1.1fr 0.9fr';
-                const rightSide = document.querySelector('.hero-visual-carousel');
-                if(rightSide) rightSide.style.display = 'block';
+          function applyCMS(){
+            var d = load(); if (!d) return;
+
+            /* SEO & Settings */
+            if (d.settings) {
+              if (d.settings.title) document.title = d.settings.title;
+              var md = document.querySelector('meta[name="description"]');
+              if (!md && d.settings.desc) { var m = document.createElement('meta'); m.name = 'description'; m.content = d.settings.desc; document.head.appendChild(m); }
+              else if (md && d.settings.desc) md.setAttribute('content', d.settings.desc);
+              if (d.settings.lineurl) { var lb = document.querySelector('.line-floating-btn, a[href*="line.me"]'); if (lb) lb.href = d.settings.lineurl; }
             }
-        }
-        // 5. เปิด-ปิด ส่วนวิดีโอและสถิติ
-        const videoSection = document.querySelector('.intro-video-wrapper, #video-section');
-        if (videoSection && cfg.template) videoSection.style.display = cfg.template.showVideo ? 'flex' : 'none';
-        const statSection = document.querySelector('.analytics-strip, #stats-section');
-        if (statSection && cfg.template) statSection.style.display = cfg.template.showAnalytics ? 'grid' : 'none';
-    } catch(e) { console.error("Dynamic build error:", e); }
-}
-document.addEventListener('DOMContentLoaded', applyAdminRealtimeConfig);
+
+            /* HERO SECTION */
+            if (d.hero) {
+              var h1 = document.querySelector('.hero-left-editorial h1, .hero-content h1');
+              if (h1 && (d.hero.title || d.hero.subtitle)) {
+                h1.innerHTML = (d.hero.title||'') + (d.hero.subtitle ? ' <br><span>' + d.hero.subtitle + '</span>' : '');
+              }
+              var hp = document.querySelector('.hero-left-editorial p, .hero-content p');
+              if (hp && d.hero.desc) hp.textContent = d.hero.desc;
+              var hbtn = document.querySelector('.hero-left-editorial a.btn-gradient, .hero-content a.btn-gradient');
+              if (hbtn && d.hero.btn) hbtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> ' + d.hero.btn;
+              var stats = document.querySelectorAll('.analytics-strip .stat-glass-node, .stat-glass-node');
+              [1,2,3].forEach(function(i,idx){
+                var n = d.hero['c'+i+'n'], l = d.hero['c'+i+'l'];
+                if (stats[idx]) {
+                  if (n != null) { var hEl = stats[idx].querySelector('h2, .num'); if (hEl) { hEl.setAttribute('data-target', n); hEl.textContent = n; } }
+                  if (l) { var lEl = stats[idx].querySelector('p, .lbl'); if (lEl) lEl.textContent = l; }
+                }
+              });
+              var sImgs = document.querySelectorAll('.hero-visual-carousel img, .slider-container img, .slider-img-holder img');
+              ['slide1','slide2','slide3'].forEach(function(k,idx){ if (sImgs[idx] && d.hero[k]) sImgs[idx].src = d.hero[k]; });
+            }
+
+            /* TEMPLATE CONFIG */
+            if (d.templateConfig) {
+              var tc = d.templateConfig;
+              var lg = document.querySelector('.hero-layout-grid');
+              if (lg) {
+                if (tc.heroLayout === 'minimal') {
+                  lg.style.gridTemplateColumns = '1fr';
+                  var rs = document.querySelector('.hero-visual-carousel'); if (rs) rs.style.display = 'none';
+                } else if (tc.heroLayout === 'full-banner') {
+                  lg.style.gridTemplateColumns = '1fr';
+                } else {
+                  lg.style.gridTemplateColumns = '1.1fr 0.9fr';
+                  var rs2 = document.querySelector('.hero-visual-carousel'); if (rs2) rs2.style.display = 'block';
+                }
+              }
+              var vs = document.querySelector('.intro-video-wrapper, [id*="video"]');
+              if (vs) vs.style.display = tc.showVideo !== false ? '' : 'none';
+              var as2 = document.querySelector('.analytics-strip');
+              if (as2) as2.style.display = tc.showAnalytics !== false ? '' : 'none';
+              var lf = document.querySelector('.line-floating-btn, a[href*="line.me"]');
+              if (lf) lf.style.display = tc.showLine !== false ? '' : 'none';
+            }
+
+            /* IMAGE SETTINGS */
+            if (d.imageSettings && d.imageSettings.background) {
+              var heroSec = document.getElementById('home');
+              if (heroSec) heroSec.style.backgroundImage = "linear-gradient(135deg, rgba(1,3,2,0.85) 0%, rgba(3,10,5,0.8) 50%, rgba(1,4,2,0.85) 100%), url('" + d.imageSettings.background + "')";
+            }
+
+            /* ABOUT */
+            if (d.about && d.about.about) {
+              var aEl = document.querySelector('#about p.about-text, #about-page .about-text, .about-content p');
+              if (aEl) aEl.innerHTML = d.about.about;
+            }
+
+            /* CONTACT */
+            if (d.contact) {
+              if (d.contact.map) { var mf = document.querySelector('.map-frame, iframe[src*="maps"]'); if (mf) mf.src = d.contact.map; }
+              var allLinks = document.querySelectorAll('.contact-info-text a, .contact-details a');
+              allLinks.forEach(function(a){
+                if (a.href && a.href.indexOf('tel:')===0 && d.contact.tel) { a.textContent = d.contact.tel; a.href = 'tel:' + d.contact.tel; }
+                if (a.href && a.href.indexOf('mailto:')===0 && d.contact.email) { a.textContent = d.contact.email; a.href = 'mailto:' + d.contact.email; }
+              });
+            }
+
+            /* DYNAMIC EXECUTIVES */
+            if (d.executives && d.executives.length > 0) {
+              var eg = document.querySelector('.exec-grid-board, .executives-grid, #executives .exec-grid');
+              if (eg) {
+                eg.innerHTML = d.executives.map(function(ex){
+                  return '<div class="exec-card-premium">' +
+                    '<div class="exec-avatar-shell">' +
+                    (ex.image ? '<img src="'+ex.image+'" style="width:100%;height:100%;object-fit:cover;border-radius:18px">' : '<i class="fa-solid fa-user"></i>') +
+                    '</div>' +
+                    '<h4>' + ex.name + '</h4>' +
+                    '<p>' + (ex.position||'') + '</p>' +
+                  '</div>';
+                }).join('');
+              }
+            }
+
+            /* DYNAMIC AWARDS */
+            if (d.awards && d.awards.length > 0) {
+              var ag = document.querySelector('.badges-horizontal-row, .awards-grid');
+              if (ag) {
+                ag.innerHTML = d.awards.map(function(a){
+                  return '<div class="badge-glass-node">' +
+                    '<i class="' + (a.type==='award'?'fa-solid fa-trophy':'fa-solid fa-certificate') + '" style="color:' + (a.type==='award'?'#f1c40f':'var(--color-accent-green)') + '"></i>' +
+                    '<h5>' + a.name + '</h5>' +
+                    '<p>' + (a.desc||'') + (a.year ? ' ('+a.year+')' : '') + '</p>' +
+                  '</div>';
+                }).join('');
+              }
+            }
+
+            /* DYNAMIC POLICIES */
+            if (d.policies && d.policies.length > 0) {
+              var pg = document.querySelector('.policy-grid, #policy .policy-list');
+              if (pg) {
+                var ap = d.policies.filter(function(p){ return p.status === 'active'; });
+                if (ap.length > 0) {
+                  pg.innerHTML = ap.map(function(p,i){
+                    return '<div class="policy-item-btn" style="background:rgba(46,204,113,0.1);border:1px solid var(--color-border-glass);padding:15px;border-radius:10px;color:#fff;text-align:center;cursor:pointer;transition:all 0.3s ease">' + (i+1) + '. ' + p.name + '</div>';
+                  }).join('');
+                }
+              }
+            }
+          }
+
+          /* CONTACT FORM -> save to admin messages */
+          window.submitContactForm = function(ev) {
+            ev.preventDefault();
+            var f = ev.target, fd = new FormData(f);
+            var d2 = load() || {};
+            d2.messages = d2.messages || [];
+            d2.messages.unshift({
+              id: Date.now(),
+              name: fd.get('name')||'', email: fd.get('email')||'', phone: fd.get('phone')||'',
+              subject: fd.get('subject')||'', message: fd.get('message')||'',
+              date: new Date().toISOString().slice(0,10), status: 'unread'
+            });
+            save(d2);
+            f.reset();
+            alert('ส่งข้อความสำเร็จแล้ว! ขอบคุณที่ติดต่อเรา');
+          };
+
+          /* Initial + live sync */
+          applyCMS();
+          window.addEventListener('storage', function(e){ if (e.key === KEY) applyCMS(); });
+        })();
     </script>
 
     <!-- VIDEO MODAL -->
