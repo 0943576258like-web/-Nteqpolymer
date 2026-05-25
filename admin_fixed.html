@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTEQ POLYMER — Admin Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ============ DESIGN TOKENS (เหมือน index.html ทุกประการ) ============ */
+:root{
+  --color-bg-deep:#030805;
+  --color-bg-dark:#010402;
+  --color-bg-card:rgba(5,14,9,0.75);
+  --color-border-glass:rgba(46,204,113,0.15);
+  --color-accent-green:#2ecc71;
+  --color-accent-glow:rgba(46,204,113,0.35);
+  --color-text-main:#f3f4f6;
+  --color-text-muted:#8ea485;
+  --color-danger:#e74c3c;
+  --font-display:'Plus Jakarta Sans','Sarabun',sans-serif;
+  --blur-radius:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-display);-webkit-font-smoothing:antialiased}
+html,body{
+  background:var(--color-bg-dark)!important;
+  background-image:
+    linear-gradient(135deg,rgba(1,3,2,0.72) 0%,rgba(3,10,5,0.65) 50%,rgba(1,4,2,0.72) 100%),
+    radial-gradient(circle at 20% 10%,rgba(46,204,113,0.1),transparent 45%),
+    radial-gradient(circle at 80% 90%,rgba(46,204,113,0.07),transparent 45%);
+  background-attachment:fixed!important;
+  background-size:cover,cover,cover!important;
+  color:var(--color-text-main);
+  min-height:100vh;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 20px rgba(46,204,113,0.3)}50%{box-shadow:0 0 40px rgba(46,204,113,0.6)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* ============ LOGIN ============ */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;
+  background:var(--color-bg-deep);
+  background-image:radial-gradient(circle at 50% 50%,rgba(46,204,113,0.12),transparent 60%);}
+.login-card{
+  background:var(--color-bg-card);border:1px solid var(--color-border-glass);
+  border-radius:24px;padding:46px 42px;width:100%;max-width:420px;
+  backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));
+  box-shadow:0 30px 60px rgba(0,0,0,0.7);animation:fadeInUp .6s ease;
+}
+.login-card .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.login-card .logo-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 8px 20px var(--color-accent-glow)}
+.login-card h1{font-size:22px;letter-spacing:-.5px;font-weight:700}
+.login-card h1 span{background:linear-gradient(to right,var(--color-accent-green),#2e900a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-card .sub{color:var(--color-text-muted);font-size:13px;margin-bottom:24px}
+.login-card label{display:block;font-size:11px;color:var(--color-text-muted);margin:16px 0 8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.login-card input{width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:1px solid var(--color-border-glass);border-radius:12px;color:var(--color-text-main);font-size:14px;outline:none;transition:.25s}
+.login-card input:focus{border-color:var(--color-accent-green);box-shadow:0 0 0 3px var(--color-accent-glow)}
+.login-card button{width:100%;margin-top:26px;padding:15px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);border:none;border-radius:12px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;letter-spacing:.5px;box-shadow:0 10px 25px var(--color-accent-glow);transition:.3s}
+.login-card button:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(46,204,113,0.5)}
+.login-hint{margin-top:20px;font-size:11px;color:var(--color-text-muted);text-align:center;letter-spacing:.5px}
+.login-err{color:var(--color-danger);font-size:12px;margin-top:12px;display:none}
+
+/* ============ HEADER (เหมือน index.html) ============ */
+#app{display:none}
+header{position:fixed;top:0;left:0;width:100%;
+  background:rgba(1,4,2,0.85)!important;
+  backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));
+  border-bottom:1px solid var(--color-border-glass);z-index:1001;
+}
+.nav-container{max-width:1500px;margin:0 auto;padding:0 32px;height:85px;display:flex;justify-content:space-between;align-items:center}
+.logo-block{display:flex;align-items:center;gap:14px;cursor:pointer}
+.logo-mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;box-shadow:0 8px 20px var(--color-accent-glow)}
+.logo-text{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.logo-text span{background:linear-gradient(to right,var(--color-accent-green),#2e900a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-text small{display:block;font-size:10px;color:var(--color-text-muted);font-weight:500;letter-spacing:2px;margin-top:1px;text-transform:uppercase}
+
+.utility-panel{display:flex;align-items:center;gap:14px}
+.lang-switcher-btn{background:transparent;border:1px solid var(--color-border-glass);color:var(--color-text-main);font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:.5px;transition:.3s;text-decoration:none}
+.lang-switcher-btn:hover{border-color:var(--color-accent-green);box-shadow:0 0 15px rgba(46,204,113,0.25)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1px solid var(--color-border-glass);border-radius:999px;font-size:12px;color:var(--color-text-muted)}
+.user-chip .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+
+/* ============ LAYOUT ============ */
+.shell{display:grid;grid-template-columns:260px 1fr;max-width:1500px;margin:0 auto;padding:110px 32px 50px;gap:28px;min-height:100vh}
+.sidebar{position:sticky;top:105px;align-self:start;background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:18px 12px;backdrop-filter:blur(var(--blur-radius));max-height:calc(100vh - 140px);overflow-y:auto}
+.menu-group{padding:6px 4px}
+.menu-group .label{font-size:10px;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:1.8px;padding:14px 14px 8px;font-weight:600}
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;cursor:pointer;color:var(--color-text-muted);font-size:13.5px;font-weight:500;transition:.25s;position:relative;overflow:hidden}
+.menu-item i{width:18px;text-align:center;font-size:14px}
+.menu-item::before{content:'';position:absolute;left:-100%;top:0;width:100%;height:100%;background:rgba(46,204,113,0.08);transition:left .3s ease;z-index:-1}
+.menu-item:hover::before{left:0}
+.menu-item:hover{color:var(--color-text-main)}
+.menu-item.active{background:rgba(46,204,113,0.15);color:var(--color-accent-green);font-weight:600;animation:glow-pulse 2.5s ease-in-out infinite}
+.menu-item.active i{color:var(--color-accent-green)}
+
+.main{min-width:0}
+.page-hero-overlay{margin-bottom:28px;padding:24px 28px;background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;backdrop-filter:blur(var(--blur-radius));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.page-hero-overlay p{font-size:11px;color:var(--color-accent-green);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.page-hero-overlay h2{font-size:24px;letter-spacing:-.5px;font-weight:700}
+
+.page{display:none;animation:fadeInUp .4s ease}
+.page.active{display:block}
+
+/* ============ CARDS / FIELDS ============ */
+.grid{display:grid;gap:22px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1100px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+.glass-card{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:26px;backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));transition:.3s}
+.glass-card.hover-lift:hover{transform:translateY(-4px);border-color:rgba(46,204,113,0.35);box-shadow:0 20px 40px rgba(46,204,113,0.1)}
+.glass-card h3{font-size:14px;margin-bottom:18px;color:#fff;display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.2px}
+.glass-card h3 i{color:var(--color-accent-green)}
+
+.stat-glass-node{text-align:center}
+.stat-glass-node .num{font-size:38px;font-weight:700;color:var(--color-accent-green);letter-spacing:-1.5px;text-shadow:0 0 15px var(--color-accent-glow);line-height:1}
+.stat-glass-node .lbl{font-size:13px;color:var(--color-text-muted);margin-top:8px;font-weight:500}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;color:var(--color-text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.field input,.field textarea,.field select{width:100%;padding:13px 16px;background:rgba(0,0,0,0.4);border:1px solid var(--color-border-glass);border-radius:12px;color:var(--color-text-main);font-size:14px;font-family:inherit;outline:none;transition:.25s}
+.field textarea{min-height:110px;resize:vertical;line-height:1.6}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--color-accent-green);box-shadow:0 0 0 3px var(--color-accent-glow)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.field-row{grid-template-columns:1fr}}
+
+/* ============ BUTTONS (เหมือน .btn-gradient) ============ */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--color-border-glass);background:rgba(46,204,113,0.08);color:var(--color-text-main);transition:.3s;text-decoration:none;font-family:inherit}
+.btn:hover{background:rgba(46,204,113,0.18);border-color:var(--color-accent-green);transform:translateY(-2px)}
+.btn-gradient,.btn.primary{background:linear-gradient(135deg,var(--color-accent-green),#27ae60);color:#fff;border:none;padding:13px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 25px var(--color-accent-glow);transition:.3s;font-family:inherit;text-decoration:none}
+.btn-gradient:hover,.btn.primary:hover{transform:translateY(-3px);box-shadow:0 15px 30px rgba(46,204,113,0.5)}
+.btn.danger{background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.3);color:#ff8071}
+.btn.danger:hover{background:rgba(231,76,60,0.25);transform:translateY(-2px)}
+.btn.ghost{background:transparent}
+
+/* ============ TABLES ============ */
+.table-wrap{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:18px;overflow:hidden;backdrop-filter:blur(var(--blur-radius))}
+table{width:100%;border-collapse:collapse}
+thead{background:rgba(46,204,113,0.08)}
+th{text-align:left;padding:14px 20px;font-size:11px;color:var(--color-accent-green);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;border-bottom:1px solid var(--color-border-glass)}
+td{padding:16px 20px;font-size:14px;color:var(--color-text-main);border-bottom:1px solid rgba(46,204,113,0.06)}
+tbody tr:hover{background:rgba(46,204,113,0.04)}
+tbody tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase}
+.badge.green{background:rgba(46,204,113,0.15);color:var(--color-accent-green)}
+.badge.orange{background:rgba(243,156,18,0.15);color:#f1c453}
+.badge.red{background:rgba(231,76,60,0.15);color:#ff8071}
+.badge.gray{background:rgba(255,255,255,0.06);color:var(--color-text-muted)}
+.row-actions{display:flex;gap:6px}
+.row-actions button{padding:7px 11px;border-radius:8px;border:1px solid var(--color-border-glass);background:transparent;color:var(--color-text-muted);cursor:pointer;font-size:12px;transition:.2s}
+.row-actions button:hover{color:#fff;border-color:var(--color-accent-green);background:rgba(46,204,113,0.08)}
+.row-actions button.del:hover{color:#ff8071;border-color:rgba(231,76,60,0.4);background:rgba(231,76,60,0.1)}
+
+.empty-row td{text-align:center;color:var(--color-text-muted);padding:40px;font-style:italic}
+
+.section-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:14px}
+.section-actions h3{font-size:16px;font-weight:600;letter-spacing:-.2px}
+.section-actions h3 small{display:block;color:var(--color-text-muted);font-size:12px;font-weight:400;margin-top:3px;letter-spacing:0;text-transform:none}
+
+/* ============ MODAL ============ */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);z-index:2000;display:none;align-items:center;justify-content:center;padding:30px}
+.modal-bg.show{display:flex;animation:fadeInUp .25s ease}
+.modal{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:30px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;backdrop-filter:blur(var(--blur-radius));box-shadow:0 30px 60px rgba(0,0,0,0.7)}
+.modal h2{font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+.modal .sub{color:var(--color-text-muted);font-size:13px;margin-bottom:22px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--color-border-glass)}
+
+/* ============ TOAST ============ */
+.toast{position:fixed;bottom:30px;right:30px;background:var(--color-bg-card);border:1px solid var(--color-accent-green);color:#fff;padding:14px 20px;border-radius:14px;display:none;align-items:center;gap:10px;z-index:3000;backdrop-filter:blur(var(--blur-radius));box-shadow:0 15px 40px rgba(0,0,0,0.6)}
+.toast.show{display:flex;animation:slide .3s ease}
+.toast i{color:var(--color-accent-green);font-size:18px}
+
+/* ============ MOBILE ============ */
+.burger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+@media(max-width:960px){
+  .shell{grid-template-columns:1fr;padding:100px 16px 40px;gap:16px}
+  .sidebar{position:relative;top:0;max-height:none;display:none}
+  .sidebar.open{display:block}
+  .burger{display:block}
+  .nav-container{padding:0 16px;height:70px}
+  .logo-text small{display:none}
+  .user-chip span{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo-row">
+      <div class="logo-mark"><i class="fa-solid fa-leaf"></i></div>
+      <div>
+        <h1>NTEQ <span>POLYMER</span></h1>
+        <div class="sub" style="margin:0">Admin Console</div>
+      </div>
+    </div>
+    <p class="sub">เข้าสู่ระบบเพื่อจัดการเนื้อหาเว็บไซต์</p>
+    <label>ชื่อผู้ใช้</label>
+    <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    <label>รหัสผ่าน</label>
+    <input type="password" id="login-pass" placeholder="admin1234" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-err" id="login-err"><i class="fa-solid fa-circle-exclamation"></i> ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+    <button onclick="doLogin()"><i class="fa-solid fa-arrow-right-to-bracket"></i> เข้าสู่ระบบ</button>
+    <p class="login-hint">Default: <b style="color:var(--color-accent-green)">admin</b> / <b style="color:var(--color-accent-green)">admin123</b></p>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo-block">
+        <div class="logo-mark"><i class="fa-solid fa-leaf"></i></div>
+        <div class="logo-text">NTEQ <span>POLYMER</span><small>Admin Console</small></div>
+      </a>
+      <div class="utility-panel">
+        <button class="burger" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+        <a class="lang-switcher-btn" href="index.html" target="_blank"><i class="fa-solid fa-up-right-from-square"></i> ดูเว็บไซต์</a>
+        <div class="user-chip">
+          <div class="av" id="user-av">A</div>
+          <span id="user-name">Admin</span>
+        </div>
+        <button class="lang-switcher-btn" onclick="doLogout()" style="color:#ff8071;border-color:rgba(231,76,60,0.3)"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="menu-group">
+        <div class="label">หลัก</div>
+        <div class="menu-item active" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> แดชบอร์ด</div>
+      </div>
+      <div class="menu-group">
+        <div class="label">เนื้อหาเว็บไซต์</div>
+        <div class="menu-item" data-page="hero"><i class="fa-solid fa-house"></i> หน้าแรก (Hero)</div>
+        <div class="menu-item" data-page="about"><i class="fa-solid fa-building"></i> ข้อมูลบริษัท</div>
+        <div class="menu-item" data-page="products"><i class="fa-solid fa-flask"></i> ผลิตภัณฑ์</div>
+        <div class="menu-item" data-page="news"><i class="fa-solid fa-newspaper"></i> ข่าวสาร / CSR</div>
+        <div class="menu-item" data-page="executives"><i class="fa-solid fa-user-tie"></i> ผู้บริหาร</div>
+        <div class="menu-item" data-page="jobs"><i class="fa-solid fa-briefcase"></i> ตำแหน่งงาน</div>
+        <div class="menu-item" data-page="contact"><i class="fa-solid fa-envelope"></i> ติดต่อเรา</div>
+      </div>
+      <div class="menu-group">
+        <div class="label">ระบบ</div>
+        <div class="menu-item" data-page="messages"><i class="fa-solid fa-inbox"></i> กล่องข้อความ <span id="msg-badge" class="badge red" style="margin-left:auto;display:none">0</span></div>
+        <div class="menu-item" data-page="users"><i class="fa-solid fa-users-gear"></i> ผู้ใช้ระบบ</div>
+        <div class="menu-item" data-page="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่า</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-hero-overlay">
+          <div><p>Overview</p><h2>แดชบอร์ด</h2></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Export</button>
+            <label class="btn" style="cursor:pointer"><i class="fa-solid fa-upload"></i> Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+            <a class="btn-gradient" href="index.html" target="_blank"><i class="fa-solid fa-eye"></i> ดูเว็บไซต์</a>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:22px">
+          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-products">0</div><div class="lbl">ผลิตภัณฑ์</div></div>
+          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-news">0</div><div class="lbl">ข่าวสาร / CSR</div></div>
+          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-jobs">0</div><div class="lbl">ตำแหน่งงาน</div></div>
+          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-msgs">0</div><div class="lbl">ข้อความใหม่</div></div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="glass-card">
+            <h3><i class="fa-solid fa-bolt"></i> ทางลัด</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <button class="btn" onclick="goto('hero')"><i class="fa-solid fa-pen"></i> แก้ Hero</button>
+              <button class="btn" onclick="openItem('products')"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์</button>
+              <button class="btn" onclick="openItem('news')"><i class="fa-solid fa-plus"></i> เพิ่มข่าว</button>
+              <button class="btn" onclick="goto('contact')"><i class="fa-solid fa-envelope"></i> ติดต่อ</button>
+            </div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fa-solid fa-circle-info"></i> สถานะระบบ</h3>
+            <div style="font-size:13.5px;line-height:2.2;color:#cfd6cf">
+              <div>เวอร์ชัน: <b style="color:var(--color-accent-green)">2.0.0</b></div>
+              <div>บันทึกล่าสุด: <b id="last-save" style="color:#fff">-</b></div>
+              <div>ขนาดข้อมูล: <b id="data-size" style="color:#fff">-</b></div>
+              <div>ผู้ใช้ปัจจุบัน: <b id="cur-user" style="color:#fff">-</b></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HERO -->
+      <section class="page" id="page-hero">
+        <div class="page-hero-overlay"><div><p>Landing</p><h2>หน้าแรก (Hero Section)</h2></div><button class="btn-gradient" onclick="saveHero()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card">
+          <div class="field"><label>หัวข้อหลัก</label><input id="h-title" type="text" placeholder="นวัตกรรมยางพาราเขียว"></div>
+          <div class="field"><label>หัวข้อรอง (gradient)</label><input id="h-subtitle" type="text" placeholder="วิวัฒนาการเพื่อสิ่งแวดล้อม"></div>
+          <div class="field"><label>คำอธิบาย</label><textarea id="h-desc"></textarea></div>
+          <div class="field"><label>ข้อความปุ่ม</label><input id="h-btn" type="text"></div>
+        </div>
+        <h3 style="margin:30px 0 14px;font-size:14px;color:var(--color-accent-green);letter-spacing:1.5px;text-transform:uppercase">สถิติแสดงผล (Counters)</h3>
+        <div class="grid grid-3">
+          <div class="glass-card"><div class="field"><label>ตัวเลข #1</label><input id="h-c1n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c1l" type="text"></div></div>
+          <div class="glass-card"><div class="field"><label>ตัวเลข #2</label><input id="h-c2n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c2l" type="text"></div></div>
+          <div class="glass-card"><div class="field"><label>ตัวเลข #3</label><input id="h-c3n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c3l" type="text"></div></div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="page" id="page-about">
+        <div class="page-hero-overlay"><div><p>Corporate Info</p><h2>ข้อมูลบริษัท</h2></div><button class="btn-gradient" onclick="saveAbout()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card">
+          <div class="field-row">
+            <div class="field"><label>ชื่อบริษัท</label><input id="a-name" type="text"></div>
+            <div class="field"><label>สโลแกน</label><input id="a-slogan" type="text"></div>
+          </div>
+          <div class="field"><label>เกี่ยวกับเรา</label><textarea id="a-about" rows="5"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>วิสัยทัศน์</label><textarea id="a-vision"></textarea></div>
+            <div class="field"><label>พันธกิจ</label><textarea id="a-mission"></textarea></div>
+          </div>
+          <div class="field" style="margin:0"><label>ปีก่อตั้ง</label><input id="a-year" type="number"></div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section class="page" id="page-products">
+        <div class="page-hero-overlay"><div><p>Catalog</p><h2>ผลิตภัณฑ์</h2></div><button class="btn-gradient" onclick="openItem('products')"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์</button></div>
+        <div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>หมวดหมู่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-products"></tbody></table></div>
+      </section>
+
+      <!-- NEWS -->
+      <section class="page" id="page-news">
+        <div class="page-hero-overlay"><div><p>News & CSR</p><h2>ข่าวสาร / CSR</h2></div><button class="btn-gradient" onclick="openItem('news')"><i class="fa-solid fa-plus"></i> เพิ่มข่าว</button></div>
+        <div class="table-wrap"><table><thead><tr><th>หัวข้อ</th><th>ประเภท</th><th>วันที่</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-news"></tbody></table></div>
+      </section>
+
+      <!-- EXECUTIVES -->
+      <section class="page" id="page-executives">
+        <div class="page-hero-overlay"><div><p>Leadership</p><h2>คณะกรรมการบริหาร</h2></div><button class="btn-gradient" onclick="openItem('executives')"><i class="fa-solid fa-plus"></i> เพิ่มผู้บริหาร</button></div>
+        <div class="table-wrap"><table><thead><tr><th>ชื่อ - สกุล</th><th>ตำแหน่ง</th><th>อีเมล</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-executives"></tbody></table></div>
+      </section>
+
+      <!-- JOBS -->
+      <section class="page" id="page-jobs">
+        <div class="page-hero-overlay"><div><p>Careers</p><h2>ตำแหน่งงาน</h2></div><button class="btn-gradient" onclick="openItem('jobs')"><i class="fa-solid fa-plus"></i> เพิ่มตำแหน่ง</button></div>
+        <div class="table-wrap"><table><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>ประเภท</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-jobs"></tbody></table></div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="page" id="page-contact">
+        <div class="page-hero-overlay"><div><p>Contact Info</p><h2>ข้อมูลการติดต่อ</h2></div><button class="btn-gradient" onclick="saveContact()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card">
+          <div class="field"><label>ที่อยู่</label><textarea id="c-addr"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>โทรศัพท์</label><input id="c-tel" type="text"></div>
+            <div class="field"><label>แฟกซ์</label><input id="c-fax" type="text"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>อีเมล</label><input id="c-email" type="email"></div>
+            <div class="field"><label>เว็บไซต์</label><input id="c-web" type="text"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Facebook</label><input id="c-fb" type="text"></div>
+            <div class="field"><label>Line ID</label><input id="c-line" type="text"></div>
+          </div>
+          <div class="field" style="margin:0"><label>Google Maps Embed URL</label><input id="c-map" type="text" placeholder="https://maps.google.com/maps?q=..."></div>
+        </div>
+      </section>
+
+      <!-- MESSAGES -->
+      <section class="page" id="page-messages">
+        <div class="page-hero-overlay"><div><p>Inbox</p><h2>กล่องข้อความ</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>หัวข้อ</th><th>วันที่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-messages"></tbody></table></div>
+      </section>
+
+      <!-- USERS -->
+      <section class="page" id="page-users">
+        <div class="page-hero-overlay"><div><p>System</p><h2>ผู้ใช้ระบบ</h2></div><button class="btn-gradient" onclick="openItem('users')"><i class="fa-solid fa-plus"></i> เพิ่มผู้ใช้</button></div>
+        <div class="table-wrap"><table><thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ - สกุล</th><th>บทบาท</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-users"></tbody></table></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="page" id="page-settings">
+        <div class="page-hero-overlay"><div><p>System</p><h2>ตั้งค่าระบบ</h2></div><button class="btn-gradient" onclick="saveSettings()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
+        <div class="glass-card">
+          <div class="field"><label>ชื่อเว็บไซต์ (Title)</label><input id="set-title" type="text"></div>
+          <div class="field"><label>คำอธิบาย (Meta Description)</label><textarea id="set-desc"></textarea></div>
+          <div class="field"><label>คีย์เวิร์ด (Meta Keywords)</label><input id="set-kw" type="text"></div>
+          <div class="field-row">
+            <div class="field"><label>ภาษาเริ่มต้น</label><select id="set-lang"><option value="th">ภาษาไทย</option><option value="en">English</option></select></div>
+            <div class="field"><label>โหมดบำรุงรักษา</label><select id="set-maint"><option value="0">ปิด</option><option value="1">เปิด</option></select></div>
+          </div>
+          <div class="field" style="margin:0"><label>Google Analytics ID</label><input id="set-ga" type="text" placeholder="G-XXXXXXXXXX"></div>
+        </div>
+        <div class="glass-card" style="margin-top:22px;border-color:rgba(231,76,60,0.3)">
+          <h3 style="color:#ff8071"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+          <p style="color:var(--color-text-muted);font-size:13.5px;margin-bottom:18px;line-height:1.7">ล้างข้อมูลทั้งหมดและคืนค่าเริ่มต้น การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+          <button class="btn danger" onclick="resetAll()"><i class="fa-solid fa-trash"></i> ล้างข้อมูลทั้งหมด</button>
+        </div>
+        <!-- content -->
+         <div class="modern-glass-card" style="margin-top: 30px;">
+    <div class="contact-form-header">
+        <h3><i class="fa-solid fa-wand-magic-sparkles" style="color: #2ecc71;"></i> ระบบจัดการ Template และรูปภาพอัจฉริยะ</h3>
+        <p>ปรับแต่งรูปพื้นหลัง เลย์เอาต์ และข้อมูลตัวหนังสือในหน้าหลักได้ทันทีโดยไม่ต้องแก้ไขโค้ด</p>
+    </div>
+
+    <form id="admin-config-form" onsubmit="saveWebConfig(event)" class="input-group">
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>รูปแบบเลย์เอาต์หน้าแรก (Template Layout)</label>
+                <select id="cfg-layout">
+                    <option value="grid-carousel">แบบมาตรฐาน (เนื้อหาคู่สไลด์รูปภาพคาร์เซล)</option>
+                    <option value="minimal">แบบมินิมอล (เน้นข้อความกว้างเดี่ยว ซ่อนสไลด์ขวา)</option>
+                </select>
+            </div>
+            <div class="input-field-wrapper">
+                <label>ธีมสีหลักของระบบ (Theme Style)</label>
+                <select id="cfg-theme">
+                    <option value="cyber-dark">Premium Cyber Dark Green (ธีมเขียว-มืด เรืองแสง)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>การแสดงส่วนวิดีโอแนะนำบริษัท</label>
+                <select id="cfg-video">
+                    <option value="true">เปิดการแสดงผล (Show)</option>
+                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
+                </select>
+            </div>
+            <div class="input-field-wrapper">
+                <label>การแสดงแถบตัวเลขอาร์เรย์สถิติ (Analytics Strip)</label>
+                <select id="cfg-analytics">
+                    <option value="true">เปิดการแสดงผล (Show)</option>
+                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
+            <h4><i class="fa-solid fa-image"></i> การจัดการรูปภาพในเว็บไซต์ (Image Asset Links)</h4>
+        </div>
+        <div class="input-field-wrapper">
+            <label>ลิงก์รูปภาพพื้นหลังสุดพรีเมียม (Main Wallpaper URL)</label>
+            <input type="text" id="cfg-bg-url" placeholder="วางลิงก์รูปภาพ https://...">
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field-wrapper">
+                <label>รูปสไลด์ที่ 1 (Carousel Image 1)</label>
+                <input type="text" id="cfg-c1-url" placeholder="ลิงก์รูปสไลด์ตัวที่หนึ่ง">
+            </div>
+            <div class="input-field-wrapper">
+                <label>รูปสไลด์ที่ 2 (Carousel Image 2)</label>
+                <input type="text" id="cfg-c2-url" placeholder="ลิงก์รูปสไลด์ตัวที่สอง">
+            </div>
+        </div>
+
+        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
+            <h4><i class="fa-solid fa-file-lines"></i> แก้ไขเนื้อหาข้อความหลัก (Hero Content)</h4>
+        </div>
+        <div class="input-field-wrapper">
+            <label>หัวข้อเด่นหน้าแรก (รองรับแท็กสปันสีเขียวเรืองแสงด้วยการใส่ <span>ข้อความ</span>)</label>
+            <input type="text" id="cfg-hero-title">
+        </div>
+        <div class="input-field-wrapper">
+            <label>คำอธิบายย่อรายละเอียดบริษัท (Hero Subtitle)</label>
+            <textarea id="cfg-hero-subtitle"></textarea>
+        </div>
+
+        <button type="submit" class="btn-gradient" style="margin-top: 15px; width: 100%; justify-content: center;">
+            <i class="fa-solid fa-floppy-disk"></i> บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมด
+        </button>
+    </form>
+</div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h2 id="modal-title">เพิ่มรายการ</h2>
+    <div class="sub" id="modal-sub">กรอกข้อมูลให้ครบถ้วน</div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-gradient" onclick="saveModal()"><i class="fa-solid fa-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg">บันทึกสำเร็จ</span></div>
+
+<script>
+/* =============== STATE =============== */
+const STORAGE_KEY='nteq_admin_data_v1';
+const AUTH_KEY='nteq_admin_auth';
+const DEFAULT_USERS=[{username:'admin',password:'admin123',name:'ผู้ดูแลระบบ',role:'admin'}];
+
+const defaultData=()=>({
+  hero:{title:'นวัตกรรมยางพาราเขียว',subtitle:'วิวัฒนาการเพื่อสิ่งแวดล้อม',desc:'วัสดุพอลิเมอร์ยุคใหม่ที่ออกแบบมาเพื่อขับเคลื่อนระบบนิเวศอุตสาหกรรมระดับโลกอย่างยั่งยืน',btn:'สำรวจผลิตภัณฑ์',c1n:15,c1l:'ปีแห่งประสบการณ์',c2n:500,c2l:'โครงการที่เสร็จสิ้น',c3n:100,c3l:'พันธมิตรเครือข่ายทั่วโลก'},
+  about:{name:'NTEQ POLYMER',slogan:'Premium Green Innovation',about:'ผู้นำด้านนวัตกรรมพอลิเมอร์สีเขียวเพื่อโลกอนาคต',vision:'เป็นผู้นำระดับโลกด้านวัสดุพอลิเมอร์ที่ยั่งยืน',mission:'พัฒนาผลิตภัณฑ์ที่เป็นมิตรต่อสิ่งแวดล้อม',year:2010},
+  contact:{addr:'319 หมู่ 16 ถ.ชยางกูร ต.คำป่าหลาย อ.เมืองมุกดาหาร จ.มุกดาหาร 49000',tel:'02-xxx-xxxx',fax:'',email:'info@nteq-polymer.com',web:'www.nteq-polymer.com',fb:'',line:'',map:'https://maps.google.com/maps?q=NTEQ+Polymer+Co+Ltd+Mukdahan+Thailand&t=&z=15&ie=UTF8&iwloc=&output=embed'},
+  settings:{title:'NTEQ POLYMER - Premium Green Innovation',desc:'ผู้นำด้านนวัตกรรมพอลิเมอร์สีเขียว',kw:'polymer,rubber,green innovation',lang:'th',maint:'0',ga:''},
+  products:[{id:1,name:'Green Rubber Compound',cat:'Compound',status:'active',desc:'สูตรยางพาราเขียวมาตรฐานสูง'},{id:2,name:'Eco Polymer Sheet',cat:'Sheet',status:'active',desc:'แผ่นพอลิเมอร์รีไซเคิล'}],
+  news:[{id:1,title:'NTEQ ได้รับรางวัล Green Industry 2025',type:'news',date:'2025-03-15',content:'รายละเอียดข่าว...'},{id:2,title:'กิจกรรมปลูกป่าชายเลน',type:'csr',date:'2025-02-20',content:'รายละเอียดกิจกรรม...'}],
+  executives:[{id:1,name:'คุณสมชาย ใจดี',position:'ประธานเจ้าหน้าที่บริหาร',email:'ceo@nteq-polymer.com'}],
+  jobs:[{id:1,title:'วิศวกรเคมี',dept:'R&D',type:'full-time',status:'open'}],
+  messages:[],
+  users:DEFAULT_USERS,
+  meta:{lastSave:null}
+});
+
+let data=loadData();
+function loadData(){try{const d=JSON.parse(localStorage.getItem(STORAGE_KEY));return d||defaultData();}catch{return defaultData();}}
+function saveData(){data.meta.lastSave=new Date().toISOString();localStorage.setItem(STORAGE_KEY,JSON.stringify(data));updateMeta();}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* =============== AUTH =============== */
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const found=data.users.find(x=>x.username===u&&x.password===p);
+  if(!found){document.getElementById('login-err').style.display='block';return;}
+  sessionStorage.setItem(AUTH_KEY,JSON.stringify({username:found.username,name:found.name,role:found.role}));
+  showApp(found);
+}
+function doLogout(){sessionStorage.removeItem(AUTH_KEY);location.reload();}
+function showApp(user){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('user-name').textContent=user.name;
+  document.getElementById('user-av').textContent=(user.name||'A').trim().charAt(0);
+  document.getElementById('cur-user').textContent=user.name+' ('+user.role+')';
+  renderAll();
+}
+(function(){const s=sessionStorage.getItem(AUTH_KEY);if(s){showApp(JSON.parse(s));}})();
+
+/* =============== NAV =============== */
+function goto(p){const el=document.querySelector(`.menu-item[data-page="${p}"]`);if(el)el.click();}
+document.querySelectorAll('.menu-item').forEach(m=>{
+  m.addEventListener('click',()=>{
+    document.querySelectorAll('.menu-item').forEach(x=>x.classList.remove('active'));
+    m.classList.add('active');
+    const p=m.dataset.page;
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+    document.getElementById('page-'+p).classList.add('active');
+    if(window.innerWidth<960)document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+
+/* =============== RENDER =============== */
+function renderAll(){
+  for(const k of ['title','subtitle','desc','btn','c1n','c1l','c2n','c2l','c3n','c3l']) {const el=document.getElementById('h-'+k);if(el)el.value=data.hero[k]??'';}
+  for(const k of ['name','slogan','about','vision','mission','year']) {const el=document.getElementById('a-'+k);if(el)el.value=data.about[k]??'';}
+  for(const k of ['addr','tel','fax','email','web','fb','line','map']) {const el=document.getElementById('c-'+k);if(el)el.value=data.contact[k]??'';}
+  for(const k of ['title','desc','kw','lang','maint','ga']) {const el=document.getElementById('set-'+k);if(el)el.value=data.settings[k]??'';}
+
+  renderTable('products',r=>`<td><b>${esc(r.name)}</b></td><td>${esc(r.cat)}</td><td>${badge(r.status)}</td>`);
+  renderTable('news',r=>`<td><b>${esc(r.title)}</b></td><td><span class="badge ${r.type==='csr'?'orange':'green'}">${r.type==='csr'?'CSR':'NEWS'}</span></td><td>${esc(r.date)}</td>`);
+  renderTable('executives',r=>`<td><b>${esc(r.name)}</b></td><td>${esc(r.position)}</td><td style="color:var(--color-text-muted)">${esc(r.email)}</td>`);
+  renderTable('jobs',r=>`<td><b>${esc(r.title)}</b></td><td>${esc(r.dept)}</td><td>${esc(r.type)}</td><td>${badge(r.status)}</td>`);
+  renderTable('users',r=>`<td><b>${esc(r.username)}</b></td><td>${esc(r.name)}</td><td><span class="badge green">${esc(r.role)}</span></td>`);
+  renderMessages();
+  updateStats();
+  updateMeta();
+}
+function badge(s){const m={active:'green',open:'green',inactive:'gray',closed:'gray',unread:'red',read:'gray'};return `<span class="badge ${m[s]||'gray'}">${esc(s)}</span>`;}
+function renderTable(name,rowFn){
+  const tb=document.getElementById('tbl-'+name);if(!tb)return;
+  const rows=data[name]||[];
+  if(!rows.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">ยังไม่มีข้อมูล — กดปุ่ม "เพิ่ม" ด้านบนเพื่อเริ่มต้น</td></tr>`;return;}
+  tb.innerHTML=rows.map(r=>`<tr>${rowFn(r)}<td><div class="row-actions"><button onclick="openItem('${name}',${r.id})"><i class="fa-solid fa-pen"></i></button><button class="del" onclick="delItem('${name}',${r.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`).join('');
+}
+function renderMessages(){
+  const tb=document.getElementById('tbl-messages');const rows=data.messages||[];
+  const unread=rows.filter(m=>m.status==='unread').length;
+  const badge=document.getElementById('msg-badge');
+  if(unread){badge.textContent=unread;badge.style.display='inline-block';}else{badge.style.display='none';}
+  if(!rows.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">ยังไม่มีข้อความ</td></tr>`;return;}
+  tb.innerHTML=rows.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td style="color:var(--color-text-muted)">${esc(r.email)}</td><td>${esc(r.subject)}</td><td>${esc(r.date)}</td><td><span class="badge ${r.status==='unread'?'red':'gray'}">${r.status}</span></td><td><div class="row-actions"><button onclick="viewMsg(${r.id})"><i class="fa-solid fa-eye"></i></button><button class="del" onclick="delItem('messages',${r.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`).join('');
+}
+function updateStats(){
+  document.getElementById('s-products').textContent=(data.products||[]).length;
+  document.getElementById('s-news').textContent=(data.news||[]).length;
+  document.getElementById('s-jobs').textContent=(data.jobs||[]).filter(j=>j.status!=='closed').length;
+  document.getElementById('s-msgs').textContent=(data.messages||[]).filter(m=>m.status==='unread').length;
+}
+function updateMeta(){
+  const ls=data.meta?.lastSave;
+  document.getElementById('last-save').textContent=ls?new Date(ls).toLocaleString('th-TH'):'-';
+  document.getElementById('data-size').textContent=(JSON.stringify(data).length/1024).toFixed(2)+' KB';
+}
+
+/* =============== SAVE SECTIONS =============== */
+function saveHero(){for(const k of ['title','subtitle','desc','btn']) data.hero[k]=document.getElementById('h-'+k).value;
+  for(const k of ['c1n','c2n','c3n']) data.hero[k]=Number(document.getElementById('h-'+k).value)||0;
+  for(const k of ['c1l','c2l','c3l']) data.hero[k]=document.getElementById('h-'+k).value;
+  saveData();toast('บันทึก Hero สำเร็จ');}
+function saveAbout(){for(const k of ['name','slogan','about','vision','mission']) data.about[k]=document.getElementById('a-'+k).value;
+  data.about.year=Number(document.getElementById('a-year').value)||null;saveData();toast('บันทึกข้อมูลบริษัทสำเร็จ');}
+function saveContact(){for(const k of ['addr','tel','fax','email','web','fb','line','map']) data.contact[k]=document.getElementById('c-'+k).value;saveData();toast('บันทึกการติดต่อสำเร็จ');}
+function saveSettings(){for(const k of ['title','desc','kw','lang','maint','ga']) data.settings[k]=document.getElementById('set-'+k).value;saveData();toast('บันทึกการตั้งค่าสำเร็จ');}
+
+/* =============== MODAL CRUD =============== */
+const SCHEMAS={
+  products:[{k:'name',l:'ชื่อผลิตภัณฑ์',t:'text',req:1},{k:'cat',l:'หมวดหมู่',t:'text'},{k:'desc',l:'คำอธิบาย',t:'textarea'},{k:'status',l:'สถานะ',t:'select',opts:[['active','เปิดใช้งาน'],['inactive','ปิด']]}],
+  news:[{k:'title',l:'หัวข้อ',t:'text',req:1},{k:'type',l:'ประเภท',t:'select',opts:[['news','ข่าวสาร'],['csr','CSR']]},{k:'date',l:'วันที่',t:'date'},{k:'content',l:'เนื้อหา',t:'textarea'}],
+  executives:[{k:'name',l:'ชื่อ - สกุล',t:'text',req:1},{k:'position',l:'ตำแหน่ง',t:'text'},{k:'email',l:'อีเมล',t:'email'}],
+  jobs:[{k:'title',l:'ชื่อตำแหน่ง',t:'text',req:1},{k:'dept',l:'แผนก',t:'text'},{k:'type',l:'ประเภท',t:'select',opts:[['full-time','Full-time'],['part-time','Part-time'],['contract','Contract']]},{k:'status',l:'สถานะ',t:'select',opts:[['open','เปิดรับ'],['closed','ปิด']]}],
+  users:[{k:'username',l:'ชื่อผู้ใช้',t:'text',req:1},{k:'name',l:'ชื่อ - สกุล',t:'text',req:1},{k:'password',l:'รหัสผ่าน',t:'text',req:1},{k:'role',l:'บทบาท',t:'select',opts:[['admin','Admin'],['editor','Editor']]}]
+};
+let _editing={name:null,id:null};
+function openItem(name,id){
+  _editing={name,id:id||null};
+  const schema=SCHEMAS[name];const row=id?(data[name]||[]).find(x=>x.id===id):{};
+  document.getElementById('modal-title').textContent=(id?'แก้ไข':'เพิ่ม')+' '+({products:'ผลิตภัณฑ์',news:'ข่าว / CSR',executives:'ผู้บริหาร',jobs:'ตำแหน่งงาน',users:'ผู้ใช้'}[name]||'รายการ');
+  document.getElementById('modal-sub').textContent='กรอกข้อมูลให้ครบถ้วน';
+  document.getElementById('modal-body').innerHTML=schema.map(f=>{
+    const v=row?.[f.k]??'';
+    if(f.t==='textarea')return `<div class="field"><label>${f.l}${f.req?' *':''}</label><textarea data-k="${f.k}">${esc(v)}</textarea></div>`;
+    if(f.t==='select')return `<div class="field"><label>${f.l}</label><select data-k="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${v===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`;
+    return `<div class="field"><label>${f.l}${f.req?' *':''}</label><input type="${f.t}" data-k="${f.k}" value="${esc(v)}"></div>`;
+  }).join('');
+  document.getElementById('modal-bg').classList.add('show');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('show');}
+function saveModal(){
+  const {name,id}=_editing;const obj={};
+  document.querySelectorAll('#modal-body [data-k]').forEach(el=>obj[el.dataset.k]=el.value);
+  const schema=SCHEMAS[name];
+  for(const f of schema)if(f.req&&!obj[f.k]){alert('กรุณากรอก '+f.l);return;}
+  data[name]=data[name]||[];
+  if(id){const i=data[name].findIndex(x=>x.id===id);if(i>=0)data[name][i]={...data[name][i],...obj};}
+  else{obj.id=Date.now();data[name].push(obj);}
+  saveData();renderAll();closeModal();toast(id?'แก้ไขสำเร็จ':'เพิ่มสำเร็จ');
+}
+function delItem(name,id){if(!confirm('ยืนยันการลบรายการนี้?'))return;data[name]=(data[name]||[]).filter(x=>x.id!==id);saveData();renderAll();toast('ลบแล้ว');}
+function viewMsg(id){const m=(data.messages||[]).find(x=>x.id===id);if(!m)return;
+  m.status='read';saveData();renderAll();
+  alert('จาก: '+m.name+' <'+m.email+'>\nเบอร์: '+(m.phone||'-')+'\nหัวข้อ: '+m.subject+'\nวันที่: '+m.date+'\n\n'+m.message);
+}
+
+/* =============== IMPORT / EXPORT =============== */
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nteq-data-'+Date.now()+'.json';a.click();toast('Export สำเร็จ');}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{data=JSON.parse(ev.target.result);saveData();renderAll();toast('Import สำเร็จ');}catch{alert('ไฟล์ไม่ถูกต้อง');}};r.readAsText(f);}
+function resetAll(){if(!confirm('ล้างข้อมูลทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้!'))return;if(!confirm('ยืนยันอีกครั้ง: ลบข้อมูลทั้งหมดจริง?'))return;localStorage.removeItem(STORAGE_KEY);location.reload();}
+
+/* =============== TOAST =============== */
+function toast(m){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* Sync from other tabs (index.html submitting forms) */
+window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){data=loadData();if(document.getElementById('app').style.display==='block')renderAll();}});
+/* ==========================================================================
+   INTEGRATED DYNAMIC CONTENT & TEMPLATE MANAGEMENT ENGINE
+   ========================================================================== */
+
+// ใช้คีย์หลักตัวเดียวกับระบบหลังบ้านเดิมเพื่อให้ข้อมูลเซฟรวมกันไม่กระจัดกระจาย
+const DYNAMIC_KEY = 'nteq_platform_data';
+
+// ฟังก์ชันดึงค่าปัจจุบันที่ Admin เคยตั้งไว้ มาใส่ในกล่อง Form ตอนเปิดหน้าเว็บ
+function loadCurrentConfigToForm() {
+    const localRaw = localStorage.getItem(DYNAMIC_KEY);
+    if (!localRaw) return;
+    
+    try {
+        const fullData = JSON.parse(localRaw);
+        // เช็คว่ามีออบเจกต์โครงสร้างเว็บอยู่ไหม ถ้าไม่มีให้ข้าม
+        if (!fullData.webConfig) return;
+        
+        const cfg = fullData.webConfig;
+        
+        // คืนค่าไปยังฟิลด์กรอกข้อมูลของ Admin
+        if(document.getElementById('cfg-layout') && cfg.template) document.getElementById('cfg-layout').value = cfg.template.heroLayout;
+        if(document.getElementById('cfg-video') && cfg.template) document.getElementById('cfg-video').value = cfg.template.showVideo.toString();
+        if(document.getElementById('cfg-analytics') && cfg.template) document.getElementById('cfg-analytics').value = cfg.template.showAnalytics.toString();
+        
+        if(document.getElementById('cfg-bg-url') && cfg.images) document.getElementById('cfg-bg-url').value = cfg.images.heroBackground || '';
+        if(document.getElementById('cfg-c1-url') && cfg.images?.carousel) document.getElementById('cfg-c1-url').value = cfg.images.carousel[0] || '';
+        if(document.getElementById('cfg-c2-url') && cfg.images?.carousel) document.getElementById('cfg-c2-url').value = cfg.images.carousel[1] || '';
+        
+        if(document.getElementById('cfg-hero-title') && cfg.content) document.getElementById('cfg-hero-title').value = cfg.content.heroTitle || '';
+        if(document.getElementById('cfg-hero-subtitle') && cfg.content) document.getElementById('cfg-hero-subtitle').value = cfg.content.heroSubtitle || '';
+    } catch(e) {
+        console.error("Error parsing configuration data:", e);
+    }
+}
+
+// ฟังก์ชันเซฟค่าลงฐานข้อมูลร่วมกัน (ไม่ให้ทับข้อมูลกล่องข้อความ Inbox เดิมที่มีอยู่)
+function saveWebConfig(event) {
+    event.preventDefault();
+    
+    // โหลดข้อมูลเก่าทั้งหมดขึ้นมาก่อน (เผื่อมีคิวข้อความที่ลูกค้าส่งเข้ามา)
+    let fullData = {};
+    const localRaw = localStorage.getItem(DYNAMIC_KEY);
+    if (localRaw) {
+        try { fullData = JSON.parse(localRaw); } catch(e) { fullData = {}; }
+    }
+    
+    // ฝังโครงสร้างหน้าเว็บ (webConfig) เพิ่มเติมเข้าไปในออบเจกต์หลัก
+    fullData.webConfig = {
+        template: {
+            heroLayout: document.getElementById('cfg-layout').value,
+            showVideo: document.getElementById('cfg-video').value === 'true',
+            showAnalytics: document.getElementById('cfg-analytics').value === 'true'
+        },
+        images: {
+            heroBackground: document.getElementById('cfg-bg-url').value,
+            carousel: [
+                document.getElementById('cfg-c1-url').value,
+                document.getElementById('cfg-c2-url').value
+            ]
+        },
+        content: {
+            heroTitle: document.getElementById('cfg-hero-title').value,
+            heroSubtitle: document.getElementById('cfg-hero-subtitle').value
+        }
+    };
+
+    // บันทึกกลับลงฐานข้อมูล LocalStorage
+    localStorage.setItem(DYNAMIC_KEY, JSON.stringify(fullData));
+    
+    // ใช้ระบบ Toast แจ้งเตือนเดิมของหน้าแอดมินที่มีอยู่แล้ว
+    if(typeof toast === 'function') {
+        toast('บันทึกเทมเพลตและอัปเดตรูปภาพเรียบร้อยแล้ว!');
+    } else {
+        alert('บันทึกข้อมูลเรียบร้อยแล้ว!');
+    }
+}
+
+// ตรวจสอบตัวดักจับ Event โหลดหน้าเพจ (หากของเก่ามี window.onload ให้ย้ายมาพ่วงที่นี่แทน)
+document.addEventListener('DOMContentLoaded', () => {
+    // โหลดข้อมูลฟอร์มดีไซน์
+    loadCurrentConfigToForm();
+    
+    // พ่วงเรียกฟังก์ชันดั้งเดิมของหน้า Admin (เช่น โหลดตารางข้อความ inbox ถ้ามี)
+    if(typeof renderAll === 'function') {
+        renderAll();
+    }
+});
+</script>
+</body>
+</html>
