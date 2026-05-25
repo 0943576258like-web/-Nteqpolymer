@@ -2844,19 +2844,18 @@
             checkCookies();
             initWelcomePopup();
         });
-        function refreshContent() {
-  const data = JSON.parse(localStorage.getItem(KEY) || '{}');
-  if (data.textBlocks) {
-    // สมมติว่ามี Element ที่แสดงผลชื่อ tb-title
-    const titleEl = document.getElementById('tb-title');
-    if (titleEl) titleEl.textContent = data.textBlocks.title;
+        // เพิ่ม Event Listener เพื่อตรวจจับการเปลี่ยนแปลงของ localStorage
+window.addEventListener('storage', (event) => {
+  // ตรวจสอบว่า KEY ตรงกับที่ใช้บันทึกใน admin.html หรือไม่
+  if (event.key === 'KEY_ของคุณ') { // เปลี่ยน 'KEY_ของคุณ' เป็นชื่อ KEY ที่คุณใช้
+    console.log("มีการแก้ไขข้อมูลจาก Admin, กำลังโหลดข้อมูลใหม่...");
     
-    // ทำแบบนี้กับทุกส่วนที่คุณต้องการอัปเดต
+    // สั่งให้หน้าเว็บโหลดข้อมูลจาก localStorage ใหม่
+    // สมมติว่าคุณมีฟังก์ชันสำหรับโหลดข้อมูลชื่อ loadData()
+    // ถ้าไม่มี คุณสามารถใช้ location.reload() เพื่อรีเฟรชหน้าเว็บอัตโนมัติได้ครับ
+    location.reload(); 
   }
-}
-
-// เรียกฟังก์ชันนี้หลังโหลดหน้าเว็บ และเมื่อตรวจพบการเปลี่ยนแปลง
-window.addEventListener('storage', refreshContent);
+});
 	    </script>
 
     <!-- VIDEO MODAL -->
