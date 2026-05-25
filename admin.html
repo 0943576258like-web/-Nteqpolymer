@@ -3,756 +3,1363 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NTEQ POLYMER — Admin Console</title>
+<title>NTEQ Admin — CMS Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* ============ DESIGN TOKENS (เหมือน index.html ทุกประการ) ============ */
-:root{
-  --color-bg-deep:#030805;
-  --color-bg-dark:#010402;
-  --color-bg-card:rgba(5,14,9,0.75);
-  --color-border-glass:rgba(46,204,113,0.15);
-  --color-accent-green:#2ecc71;
-  --color-accent-glow:rgba(46,204,113,0.35);
-  --color-text-main:#f3f4f6;
-  --color-text-muted:#8ea485;
-  --color-danger:#e74c3c;
-  --font-display:'Plus Jakarta Sans','Sarabun',sans-serif;
-  --blur-radius:20px;
+:root {
+  --bg: #020904;
+  --bg2: #040e07;
+  --card: rgba(6,18,10,0.9);
+  --border: rgba(46,204,113,0.18);
+  --green: #2ecc71;
+  --green2: #27ae60;
+  --green-glow: rgba(46,204,113,0.25);
+  --text: #f0f4f0;
+  --muted: #6b8f6b;
+  --danger: #e74c3c;
+  --warn: #f39c12;
+  --info: #3498db;
+  --sidebar-w: 260px;
+  --font: 'Plus Jakarta Sans','Sarabun',sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-display);-webkit-font-smoothing:antialiased}
-html,body{
-  background:var(--color-bg-dark)!important;
-  background-image:
-    linear-gradient(135deg,rgba(1,3,2,0.72) 0%,rgba(3,10,5,0.65) 50%,rgba(1,4,2,0.72) 100%),
-    radial-gradient(circle at 20% 10%,rgba(46,204,113,0.1),transparent 45%),
-    radial-gradient(circle at 80% 90%,rgba(46,204,113,0.07),transparent 45%);
-  background-attachment:fixed!important;
-  background-size:cover,cover,cover!important;
-  color:var(--color-text-main);
-  min-height:100vh;overflow-x:hidden;
-}
-a{color:inherit;text-decoration:none}
+*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font);}
+html,body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes glow-pulse{0%,100%{box-shadow:0 0 20px rgba(46,204,113,0.3)}50%{box-shadow:0 0 40px rgba(46,204,113,0.6)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+/* ─── LOGIN ─── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{width:420px;padding:50px 44px;background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:0 0 80px rgba(46,204,113,0.08);}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;}
+.login-logo .brand{font-size:22px;font-weight:800;color:var(--green);letter-spacing:2px;}
+.login-logo .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.login-box h2{font-size:20px;font-weight:700;margin-bottom:6px;}
+.login-box p{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.inp-group{margin-bottom:18px;}
+.inp-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
+.inp-group input{width:100%;background:rgba(46,204,113,0.05);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-size:14px;outline:none;transition:border .2s;}
+.inp-group input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(46,204,113,0.1);}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,204,113,0.35);}
+#login-err{color:var(--danger);font-size:13px;margin-top:10px;display:none;}
 
-/* ============ LOGIN ============ */
-#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;
-  background:var(--color-bg-deep);
-  background-image:radial-gradient(circle at 50% 50%,rgba(46,204,113,0.12),transparent 60%);}
-.login-card{
-  background:var(--color-bg-card);border:1px solid var(--color-border-glass);
-  border-radius:24px;padding:46px 42px;width:100%;max-width:420px;
-  backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));
-  box-shadow:0 30px 60px rgba(0,0,0,0.7);animation:fadeInUp .6s ease;
-}
-.login-card .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-.login-card .logo-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 8px 20px var(--color-accent-glow)}
-.login-card h1{font-size:22px;letter-spacing:-.5px;font-weight:700}
-.login-card h1 span{background:linear-gradient(to right,var(--color-accent-green),#2e900a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.login-card .sub{color:var(--color-text-muted);font-size:13px;margin-bottom:24px}
-.login-card label{display:block;font-size:11px;color:var(--color-text-muted);margin:16px 0 8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
-.login-card input{width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:1px solid var(--color-border-glass);border-radius:12px;color:var(--color-text-main);font-size:14px;outline:none;transition:.25s}
-.login-card input:focus{border-color:var(--color-accent-green);box-shadow:0 0 0 3px var(--color-accent-glow)}
-.login-card button{width:100%;margin-top:26px;padding:15px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);border:none;border-radius:12px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;letter-spacing:.5px;box-shadow:0 10px 25px var(--color-accent-glow);transition:.3s}
-.login-card button:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(46,204,113,0.5)}
-.login-hint{margin-top:20px;font-size:11px;color:var(--color-text-muted);text-align:center;letter-spacing:.5px}
-.login-err{color:var(--color-danger);font-size:12px;margin-top:12px;display:none}
+/* ─── MAIN LAYOUT ─── */
+#app{display:none;height:100vh;overflow:hidden;}
+.sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-head{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+.sidebar-brand{font-size:18px;font-weight:800;color:var(--green);letter-spacing:2px;}
+.sidebar-sub{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px;}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.sidebar-user .uname{font-size:13px;font-weight:600;}
+.sidebar-user .urole{font-size:11px;color:var(--muted);}
 
-/* ============ HEADER (เหมือน index.html) ============ */
-#app{display:none}
-header{position:fixed;top:0;left:0;width:100%;
-  background:rgba(1,4,2,0.85)!important;
-  backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));
-  border-bottom:1px solid var(--color-border-glass);z-index:1001;
-}
-.nav-container{max-width:1500px;margin:0 auto;padding:0 32px;height:85px;display:flex;justify-content:space-between;align-items:center}
-.logo-block{display:flex;align-items:center;gap:14px;cursor:pointer}
-.logo-mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;box-shadow:0 8px 20px var(--color-accent-glow)}
-.logo-text{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.logo-text span{background:linear-gradient(to right,var(--color-accent-green),#2e900a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-text small{display:block;font-size:10px;color:var(--color-text-muted);font-weight:500;letter-spacing:2px;margin-top:1px;text-transform:uppercase}
+.nav-section{padding:16px 12px 8px;}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .2s;position:relative;text-decoration:none;}
+.nav-item i{width:18px;text-align:center;font-size:14px;}
+.nav-item:hover{background:rgba(46,204,113,0.08);color:var(--text);}
+.nav-item.active{background:rgba(46,204,113,0.15);color:var(--green);font-weight:600;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--green);border-radius:0 3px 3px 0;}
+.badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
 
-.utility-panel{display:flex;align-items:center;gap:14px}
-.lang-switcher-btn{background:transparent;border:1px solid var(--color-border-glass);color:var(--color-text-main);font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:.5px;transition:.3s;text-decoration:none}
-.lang-switcher-btn:hover{border-color:var(--color-accent-green);box-shadow:0 0 15px rgba(46,204,113,0.25)}
-.user-chip{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1px solid var(--color-border-glass);border-radius:999px;font-size:12px;color:var(--color-text-muted)}
-.user-chip .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--color-accent-green),#27ae60);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+.sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
 
-/* ============ LAYOUT ============ */
-.shell{display:grid;grid-template-columns:260px 1fr;max-width:1500px;margin:0 auto;padding:110px 32px 50px;gap:28px;min-height:100vh}
-.sidebar{position:sticky;top:105px;align-self:start;background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:18px 12px;backdrop-filter:blur(var(--blur-radius));max-height:calc(100vh - 140px);overflow-y:auto}
-.menu-group{padding:6px 4px}
-.menu-group .label{font-size:10px;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:1.8px;padding:14px 14px 8px;font-weight:600}
-.menu-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;cursor:pointer;color:var(--color-text-muted);font-size:13.5px;font-weight:500;transition:.25s;position:relative;overflow:hidden}
-.menu-item i{width:18px;text-align:center;font-size:14px}
-.menu-item::before{content:'';position:absolute;left:-100%;top:0;width:100%;height:100%;background:rgba(46,204,113,0.08);transition:left .3s ease;z-index:-1}
-.menu-item:hover::before{left:0}
-.menu-item:hover{color:var(--color-text-main)}
-.menu-item.active{background:rgba(46,204,113,0.15);color:var(--color-accent-green);font-weight:600;animation:glow-pulse 2.5s ease-in-out infinite}
-.menu-item.active i{color:var(--color-accent-green)}
+/* ─── MAIN CONTENT ─── */
+.main{margin-left:var(--sidebar-w);height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{padding:16px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(2,9,4,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:18px;font-weight:700;}
+.topbar-title span{color:var(--green);}
+.topbar-actions{display:flex;gap:10px;align-items:center;}
+.btn{padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,204,113,0.3);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--green);color:var(--green);}
+.btn-danger{background:rgba(231,76,60,0.1);color:var(--danger);border:1px solid rgba(231,76,60,0.2);}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-sm{padding:6px 13px;font-size:12px;}
+.btn-warn{background:rgba(243,156,18,0.1);color:var(--warn);border:1px solid rgba(243,156,18,0.2);}
+.btn-warn:hover{background:var(--warn);color:#fff;}
 
-.main{min-width:0}
-.page-hero-overlay{margin-bottom:28px;padding:24px 28px;background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;backdrop-filter:blur(var(--blur-radius));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
-.page-hero-overlay p{font-size:11px;color:var(--color-accent-green);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
-.page-hero-overlay h2{font-size:24px;letter-spacing:-.5px;font-weight:700}
+/* ─── CONTENT AREA ─── */
+.content{padding:28px 32px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
 
-.page{display:none;animation:fadeInUp .4s ease}
-.page.active{display:block}
+/* ─── DASHBOARD ─── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 14px 0 80px;background:var(--green-glow);opacity:.4;}
+.stat-num{font-size:28px;font-weight:800;color:var(--green);}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+.stat-icon{position:absolute;top:22px;right:22px;font-size:20px;color:var(--green);opacity:.5;}
 
-/* ============ CARDS / FIELDS ============ */
-.grid{display:grid;gap:22px}
-.grid-2{grid-template-columns:repeat(2,1fr)}
-.grid-3{grid-template-columns:repeat(3,1fr)}
-.grid-4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:1100px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:760px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.qa-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;text-align:center;transition:all .2s;}
+.qa-btn:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,204,113,0.12);}
+.qa-btn i{font-size:24px;color:var(--green);margin-bottom:10px;display:block;}
+.qa-btn span{font-size:13px;font-weight:600;color:var(--text);}
 
-.glass-card{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:26px;backdrop-filter:blur(var(--blur-radius));-webkit-backdrop-filter:blur(var(--blur-radius));transition:.3s}
-.glass-card.hover-lift:hover{transform:translateY(-4px);border-color:rgba(46,204,113,0.35);box-shadow:0 20px 40px rgba(46,204,113,0.1)}
-.glass-card h3{font-size:14px;margin-bottom:18px;color:#fff;display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.2px}
-.glass-card h3 i{color:var(--color-accent-green)}
+/* ─── SECTION EDITOR ─── */
+.section-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.stab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;border:1px solid var(--border);color:var(--muted);transition:all .2s;}
+.stab.active,.stab:hover{background:rgba(46,204,113,0.12);border-color:var(--green);color:var(--green);}
 
-.stat-glass-node{text-align:center}
-.stat-glass-node .num{font-size:38px;font-weight:700;color:var(--color-accent-green);letter-spacing:-1.5px;text-shadow:0 0 15px var(--color-accent-glow);line-height:1}
-.stat-glass-node .lbl{font-size:13px;color:var(--color-text-muted);margin-top:8px;font-weight:500}
+.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.editor-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.editor-card.full{grid-column:1/-1;}
+.ec-title{font-size:14px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;color:var(--text);}
+.ec-title i{color:var(--green);}
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+.form-row input,.form-row textarea,.form-row select{width:100%;background:rgba(46,204,113,0.04);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;transition:border .2s;resize:vertical;}
+.form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(46,204,113,0.08);}
+.form-row textarea{min-height:80px;}
+.form-row select option{background:#040e07;}
+.form-hint{font-size:11px;color:var(--muted);margin-top:4px;}
 
-.field{margin-bottom:18px}
-.field label{display:block;font-size:11px;color:var(--color-text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
-.field input,.field textarea,.field select{width:100%;padding:13px 16px;background:rgba(0,0,0,0.4);border:1px solid var(--color-border-glass);border-radius:12px;color:var(--color-text-main);font-size:14px;font-family:inherit;outline:none;transition:.25s}
-.field textarea{min-height:110px;resize:vertical;line-height:1.6}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--color-accent-green);box-shadow:0 0 0 3px var(--color-accent-glow)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:680px){.field-row{grid-template-columns:1fr}}
+/* ─── IMAGE MANAGER ─── */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:16px;}
+.img-item{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/10;cursor:pointer;background:rgba(46,204,113,0.04);}
+.img-item img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-item-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s;}
+.img-item:hover .img-item-overlay{opacity:1;}
+.img-item-overlay button{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer;transition:all .2s;}
+.img-item-overlay button:hover{background:var(--green);border-color:var(--green);}
+.img-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);padding:6px 10px;font-size:11px;color:var(--muted);}
+.img-add{border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
+.img-add:hover{border-color:var(--green);color:var(--green);}
+.img-add i{font-size:28px;}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all .2s;margin-top:12px;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--green);background:rgba(46,204,113,0.04);}
+.upload-zone i{font-size:36px;color:var(--green);opacity:.6;margin-bottom:12px;display:block;}
+.upload-zone p{font-size:13px;color:var(--muted);}
+.upload-zone span{color:var(--green);font-weight:600;}
 
-/* ============ BUTTONS (เหมือน .btn-gradient) ============ */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--color-border-glass);background:rgba(46,204,113,0.08);color:var(--color-text-main);transition:.3s;text-decoration:none;font-family:inherit}
-.btn:hover{background:rgba(46,204,113,0.18);border-color:var(--color-accent-green);transform:translateY(-2px)}
-.btn-gradient,.btn.primary{background:linear-gradient(135deg,var(--color-accent-green),#27ae60);color:#fff;border:none;padding:13px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 25px var(--color-accent-glow);transition:.3s;font-family:inherit;text-decoration:none}
-.btn-gradient:hover,.btn.primary:hover{transform:translateY(-3px);box-shadow:0 15px 30px rgba(46,204,113,0.5)}
-.btn.danger{background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.3);color:#ff8071}
-.btn.danger:hover{background:rgba(231,76,60,0.25);transform:translateY(-2px)}
-.btn.ghost{background:transparent}
+/* ─── TEMPLATE SWITCHER ─── */
+.template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;}
+.tpl-card{background:var(--card);border:2px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.tpl-card:hover{border-color:var(--green);transform:translateY(-2px);}
+.tpl-card.selected{border-color:var(--green);box-shadow:0 0 0 3px rgba(46,204,113,0.15);}
+.tpl-preview{height:130px;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;overflow:hidden;}
+.tpl-info{padding:14px 16px;}
+.tpl-name{font-size:13px;font-weight:700;}
+.tpl-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.tpl-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;}
 
-/* ============ TABLES ============ */
-.table-wrap{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:18px;overflow:hidden;backdrop-filter:blur(var(--blur-radius))}
-table{width:100%;border-collapse:collapse}
-thead{background:rgba(46,204,113,0.08)}
-th{text-align:left;padding:14px 20px;font-size:11px;color:var(--color-accent-green);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;border-bottom:1px solid var(--color-border-glass)}
-td{padding:16px 20px;font-size:14px;color:var(--color-text-main);border-bottom:1px solid rgba(46,204,113,0.06)}
-tbody tr:hover{background:rgba(46,204,113,0.04)}
-tbody tr:last-child td{border-bottom:none}
-.badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase}
-.badge.green{background:rgba(46,204,113,0.15);color:var(--color-accent-green)}
-.badge.orange{background:rgba(243,156,18,0.15);color:#f1c453}
-.badge.red{background:rgba(231,76,60,0.15);color:#ff8071}
-.badge.gray{background:rgba(255,255,255,0.06);color:var(--color-text-muted)}
-.row-actions{display:flex;gap:6px}
-.row-actions button{padding:7px 11px;border-radius:8px;border:1px solid var(--color-border-glass);background:transparent;color:var(--color-text-muted);cursor:pointer;font-size:12px;transition:.2s}
-.row-actions button:hover{color:#fff;border-color:var(--color-accent-green);background:rgba(46,204,113,0.08)}
-.row-actions button.del:hover{color:#ff8071;border-color:rgba(231,76,60,0.4);background:rgba(231,76,60,0.1)}
+/* ─── TEXT BLOCKS ─── */
+.text-blocks{display:flex;flex-direction:column;gap:12px;}
+.tb-item{background:rgba(46,204,113,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.tb-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.tb-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--green);flex:1;}
+.tb-item textarea{width:100%;background:transparent;border:none;color:var(--text);font-size:13px;resize:none;outline:none;line-height:1.6;}
 
-.empty-row td{text-align:center;color:var(--color-text-muted);padding:40px;font-style:italic}
+/* ─── MESSAGES ─── */
+.msg-list{display:flex;flex-direction:column;gap:10px;}
+.msg-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:flex-start;gap:16px;cursor:pointer;transition:all .2s;}
+.msg-item:hover{border-color:var(--green);}
+.msg-item.unread{border-left:3px solid var(--green);}
+.msg-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+.msg-body{flex:1;}
+.msg-name{font-size:14px;font-weight:700;}
+.msg-subject{font-size:13px;color:var(--muted);margin-top:2px;}
+.msg-preview{font-size:12px;color:var(--muted);margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:400px;}
+.msg-meta{text-align:right;}
+.msg-date{font-size:11px;color:var(--muted);}
+.msg-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:auto;margin-top:6px;}
 
-.section-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:14px}
-.section-actions h3{font-size:16px;font-weight:600;letter-spacing:-.2px}
-.section-actions h3 small{display:block;color:var(--color-text-muted);font-size:12px;font-weight:400;margin-top:3px;letter-spacing:0;text-transform:none}
+/* ─── SETTINGS ─── */
+.settings-section{margin-bottom:28px;}
+.settings-section h3{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--green);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(46,204,113,0.07);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info .tlabel{font-size:14px;font-weight:500;}
+.toggle-info .tdesc{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:24px;cursor:pointer;transition:.3s;}
+.toggle-track::before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s;}
+.toggle input:checked + .toggle-track{background:var(--green);}
+.toggle input:checked + .toggle-track::before{transform:translateX(20px);}
 
-/* ============ MODAL ============ */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);z-index:2000;display:none;align-items:center;justify-content:center;padding:30px}
-.modal-bg.show{display:flex;animation:fadeInUp .25s ease}
-.modal{background:var(--color-bg-card);border:1px solid var(--color-border-glass);border-radius:20px;padding:30px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;backdrop-filter:blur(var(--blur-radius));box-shadow:0 30px 60px rgba(0,0,0,0.7)}
-.modal h2{font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
-.modal .sub{color:var(--color-text-muted);font-size:13px;margin-bottom:22px}
-.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--color-border-glass)}
+/* ─── MODAL ─── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-backdrop.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;width:90%;max-width:600px;max-height:85vh;overflow-y:auto;transform:translateY(20px);transition:transform .2s;}
+.modal-backdrop.open .modal{transform:translateY(0);}
+.modal-head{padding:24px 28px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head h3{font-size:16px;font-weight:700;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:24px 28px;}
+.modal-foot{padding:18px 28px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
 
-/* ============ TOAST ============ */
-.toast{position:fixed;bottom:30px;right:30px;background:var(--color-bg-card);border:1px solid var(--color-accent-green);color:#fff;padding:14px 20px;border-radius:14px;display:none;align-items:center;gap:10px;z-index:3000;backdrop-filter:blur(var(--blur-radius));box-shadow:0 15px 40px rgba(0,0,0,0.6)}
-.toast.show{display:flex;animation:slide .3s ease}
-.toast i{color:var(--color-accent-green);font-size:18px}
+/* ─── TOAST ─── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:slideInRight .3s ease;min-width:280px;}
+@keyframes slideInRight{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--danger);}
+.toast.info{border-left:3px solid var(--info);}
+.toast i{font-size:16px;}
+.toast.success i{color:var(--green);}
+.toast.error i{color:var(--danger);}
+.toast.info i{color:var(--info);}
 
-/* ============ MOBILE ============ */
-.burger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
-@media(max-width:960px){
-  .shell{grid-template-columns:1fr;padding:100px 16px 40px;gap:16px}
-  .sidebar{position:relative;top:0;max-height:none;display:none}
-  .sidebar.open{display:block}
-  .burger{display:block}
-  .nav-container{padding:0 16px;height:70px}
-  .logo-text small{display:none}
-  .user-chip span{display:none}
-}
+/* ─── PAGE MANAGER ─── */
+.page-list{display:flex;flex-direction:column;gap:10px;}
+.page-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:14px;}
+.page-icon{width:40px;height:40px;border-radius:10px;background:rgba(46,204,113,0.1);display:flex;align-items:center;justify-content:center;color:var(--green);font-size:16px;flex-shrink:0;}
+.page-info{flex:1;}
+.page-name{font-size:14px;font-weight:700;}
+.page-path{font-size:12px;color:var(--muted);}
+.page-status{display:flex;align-items:center;gap:6px;font-size:12px;margin-left:auto;}
+.status-dot{width:8px;height:8px;border-radius:50%;}
+.status-dot.live{background:var(--green);box-shadow:0 0 6px rgba(46,204,113,.6);}
+.status-dot.draft{background:var(--warn);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1100px){.stats-row,.quick-actions{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.sidebar{width:220px;}.main{margin-left:220px;}.editor-grid{grid-template-columns:1fr;}.template-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
+<!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
-  <div class="login-card">
-    <div class="logo-row">
-      <div class="logo-mark"><i class="fa-solid fa-leaf"></i></div>
+  <div class="login-box">
+    <div class="login-logo">
       <div>
-        <h1>NTEQ <span>POLYMER</span></h1>
-        <div class="sub" style="margin:0">Admin Console</div>
+        <div class="brand">NTEQ</div>
+        <div class="sub">ADMIN PORTAL</div>
       </div>
     </div>
-    <p class="sub">เข้าสู่ระบบเพื่อจัดการเนื้อหาเว็บไซต์</p>
-    <label>ชื่อผู้ใช้</label>
-    <input type="text" id="login-user" placeholder="admin" autocomplete="username">
-    <label>รหัสผ่าน</label>
-    <input type="password" id="login-pass" placeholder="admin1234" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="login-err" id="login-err"><i class="fa-solid fa-circle-exclamation"></i> ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
-    <button onclick="doLogin()"><i class="fa-solid fa-arrow-right-to-bracket"></i> เข้าสู่ระบบ</button>
-    <p class="login-hint">Default: <b style="color:var(--color-accent-green)">admin</b> / <b style="color:var(--color-accent-green)">admin123</b></p>
+    <h2>เข้าสู่ระบบหลังบ้าน</h2>
+    <p>กรุณาเข้าสู่ระบบเพื่อจัดการเนื้อหาเว็บไซต์</p>
+    <div class="inp-group">
+      <label>ชื่อผู้ใช้</label>
+      <input type="text" id="inp-user" placeholder="admin" />
+    </div>
+    <div class="inp-group">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="inp-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="btn-login" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+    <div id="login-err"><i class="fa-solid fa-circle-exclamation"></i> ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+<!-- ═══ APP ═══ -->
 <div id="app">
-  <header>
-    <div class="nav-container">
-      <a href="index.html" class="logo-block">
-        <div class="logo-mark"><i class="fa-solid fa-leaf"></i></div>
-        <div class="logo-text">NTEQ <span>POLYMER</span><small>Admin Console</small></div>
-      </a>
-      <div class="utility-panel">
-        <button class="burger" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
-        <a class="lang-switcher-btn" href="index.html" target="_blank"><i class="fa-solid fa-up-right-from-square"></i> ดูเว็บไซต์</a>
-        <div class="user-chip">
-          <div class="av" id="user-av">A</div>
-          <span id="user-name">Admin</span>
-        </div>
-        <button class="lang-switcher-btn" onclick="doLogout()" style="color:#ff8071;border-color:rgba(231,76,60,0.3)"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-brand">NTEQ</div>
+      <div class="sidebar-sub">CMS ADMIN PANEL</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar">A</div>
+      <div>
+        <div class="uname">Admin</div>
+        <div class="urole">Super Administrator</div>
       </div>
     </div>
-  </header>
 
-  <div class="shell">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="menu-group">
-        <div class="label">หลัก</div>
-        <div class="menu-item active" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> แดชบอร์ด</div>
-      </div>
-      <div class="menu-group">
-        <div class="label">เนื้อหาเว็บไซต์</div>
-        <div class="menu-item" data-page="hero"><i class="fa-solid fa-house"></i> หน้าแรก (Hero)</div>
-        <div class="menu-item" data-page="about"><i class="fa-solid fa-building"></i> ข้อมูลบริษัท</div>
-        <div class="menu-item" data-page="products"><i class="fa-solid fa-flask"></i> ผลิตภัณฑ์</div>
-        <div class="menu-item" data-page="news"><i class="fa-solid fa-newspaper"></i> ข่าวสาร / CSR</div>
-        <div class="menu-item" data-page="executives"><i class="fa-solid fa-user-tie"></i> ผู้บริหาร</div>
-        <div class="menu-item" data-page="jobs"><i class="fa-solid fa-briefcase"></i> ตำแหน่งงาน</div>
-        <div class="menu-item" data-page="contact"><i class="fa-solid fa-envelope"></i> ติดต่อเรา</div>
-      </div>
-      <div class="menu-group">
-        <div class="label">ระบบ</div>
-        <div class="menu-item" data-page="messages"><i class="fa-solid fa-inbox"></i> กล่องข้อความ <span id="msg-badge" class="badge red" style="margin-left:auto;display:none">0</span></div>
-        <div class="menu-item" data-page="users"><i class="fa-solid fa-users-gear"></i> ผู้ใช้ระบบ</div>
-        <div class="menu-item" data-page="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่า</div>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-
-      <!-- DASHBOARD -->
-      <section class="page active" id="page-dashboard">
-        <div class="page-hero-overlay">
-          <div><p>Overview</p><h2>แดชบอร์ด</h2></div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Export</button>
-            <label class="btn" style="cursor:pointer"><i class="fa-solid fa-upload"></i> Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-            <a class="btn-gradient" href="index.html" target="_blank"><i class="fa-solid fa-eye"></i> ดูเว็บไซต์</a>
-          </div>
-        </div>
-
-        <div class="grid grid-4" style="margin-bottom:22px">
-          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-products">0</div><div class="lbl">ผลิตภัณฑ์</div></div>
-          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-news">0</div><div class="lbl">ข่าวสาร / CSR</div></div>
-          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-jobs">0</div><div class="lbl">ตำแหน่งงาน</div></div>
-          <div class="glass-card stat-glass-node hover-lift"><div class="num" id="s-msgs">0</div><div class="lbl">ข้อความใหม่</div></div>
-        </div>
-
-        <div class="grid grid-2">
-          <div class="glass-card">
-            <h3><i class="fa-solid fa-bolt"></i> ทางลัด</h3>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <button class="btn" onclick="goto('hero')"><i class="fa-solid fa-pen"></i> แก้ Hero</button>
-              <button class="btn" onclick="openItem('products')"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์</button>
-              <button class="btn" onclick="openItem('news')"><i class="fa-solid fa-plus"></i> เพิ่มข่าว</button>
-              <button class="btn" onclick="goto('contact')"><i class="fa-solid fa-envelope"></i> ติดต่อ</button>
-            </div>
-          </div>
-          <div class="glass-card">
-            <h3><i class="fa-solid fa-circle-info"></i> สถานะระบบ</h3>
-            <div style="font-size:13.5px;line-height:2.2;color:#cfd6cf">
-              <div>เวอร์ชัน: <b style="color:var(--color-accent-green)">2.0.0</b></div>
-              <div>บันทึกล่าสุด: <b id="last-save" style="color:#fff">-</b></div>
-              <div>ขนาดข้อมูล: <b id="data-size" style="color:#fff">-</b></div>
-              <div>ผู้ใช้ปัจจุบัน: <b id="cur-user" style="color:#fff">-</b></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- HERO -->
-      <section class="page" id="page-hero">
-        <div class="page-hero-overlay"><div><p>Landing</p><h2>หน้าแรก (Hero Section)</h2></div><button class="btn-gradient" onclick="saveHero()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
-        <div class="glass-card">
-          <div class="field"><label>หัวข้อหลัก</label><input id="h-title" type="text" placeholder="นวัตกรรมยางพาราเขียว"></div>
-          <div class="field"><label>หัวข้อรอง (gradient)</label><input id="h-subtitle" type="text" placeholder="วิวัฒนาการเพื่อสิ่งแวดล้อม"></div>
-          <div class="field"><label>คำอธิบาย</label><textarea id="h-desc"></textarea></div>
-          <div class="field"><label>ข้อความปุ่ม</label><input id="h-btn" type="text"></div>
-        </div>
-        <h3 style="margin:30px 0 14px;font-size:14px;color:var(--color-accent-green);letter-spacing:1.5px;text-transform:uppercase">สถิติแสดงผล (Counters)</h3>
-        <div class="grid grid-3">
-          <div class="glass-card"><div class="field"><label>ตัวเลข #1</label><input id="h-c1n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c1l" type="text"></div></div>
-          <div class="glass-card"><div class="field"><label>ตัวเลข #2</label><input id="h-c2n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c2l" type="text"></div></div>
-          <div class="glass-card"><div class="field"><label>ตัวเลข #3</label><input id="h-c3n" type="number"></div><div class="field" style="margin:0"><label>ป้ายกำกับ</label><input id="h-c3l" type="text"></div></div>
-        </div>
-      </section>
-
-      <!-- ABOUT -->
-      <section class="page" id="page-about">
-        <div class="page-hero-overlay"><div><p>Corporate Info</p><h2>ข้อมูลบริษัท</h2></div><button class="btn-gradient" onclick="saveAbout()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
-        <div class="glass-card">
-          <div class="field-row">
-            <div class="field"><label>ชื่อบริษัท</label><input id="a-name" type="text"></div>
-            <div class="field"><label>สโลแกน</label><input id="a-slogan" type="text"></div>
-          </div>
-          <div class="field"><label>เกี่ยวกับเรา</label><textarea id="a-about" rows="5"></textarea></div>
-          <div class="field-row">
-            <div class="field"><label>วิสัยทัศน์</label><textarea id="a-vision"></textarea></div>
-            <div class="field"><label>พันธกิจ</label><textarea id="a-mission"></textarea></div>
-          </div>
-          <div class="field" style="margin:0"><label>ปีก่อตั้ง</label><input id="a-year" type="number"></div>
-        </div>
-      </section>
-
-      <!-- PRODUCTS -->
-      <section class="page" id="page-products">
-        <div class="page-hero-overlay"><div><p>Catalog</p><h2>ผลิตภัณฑ์</h2></div><button class="btn-gradient" onclick="openItem('products')"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์</button></div>
-        <div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>หมวดหมู่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-products"></tbody></table></div>
-      </section>
-
-      <!-- NEWS -->
-      <section class="page" id="page-news">
-        <div class="page-hero-overlay"><div><p>News & CSR</p><h2>ข่าวสาร / CSR</h2></div><button class="btn-gradient" onclick="openItem('news')"><i class="fa-solid fa-plus"></i> เพิ่มข่าว</button></div>
-        <div class="table-wrap"><table><thead><tr><th>หัวข้อ</th><th>ประเภท</th><th>วันที่</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-news"></tbody></table></div>
-      </section>
-
-      <!-- EXECUTIVES -->
-      <section class="page" id="page-executives">
-        <div class="page-hero-overlay"><div><p>Leadership</p><h2>คณะกรรมการบริหาร</h2></div><button class="btn-gradient" onclick="openItem('executives')"><i class="fa-solid fa-plus"></i> เพิ่มผู้บริหาร</button></div>
-        <div class="table-wrap"><table><thead><tr><th>ชื่อ - สกุล</th><th>ตำแหน่ง</th><th>อีเมล</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-executives"></tbody></table></div>
-      </section>
-
-      <!-- JOBS -->
-      <section class="page" id="page-jobs">
-        <div class="page-hero-overlay"><div><p>Careers</p><h2>ตำแหน่งงาน</h2></div><button class="btn-gradient" onclick="openItem('jobs')"><i class="fa-solid fa-plus"></i> เพิ่มตำแหน่ง</button></div>
-        <div class="table-wrap"><table><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>ประเภท</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-jobs"></tbody></table></div>
-      </section>
-
-      <!-- CONTACT -->
-      <section class="page" id="page-contact">
-        <div class="page-hero-overlay"><div><p>Contact Info</p><h2>ข้อมูลการติดต่อ</h2></div><button class="btn-gradient" onclick="saveContact()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
-        <div class="glass-card">
-          <div class="field"><label>ที่อยู่</label><textarea id="c-addr"></textarea></div>
-          <div class="field-row">
-            <div class="field"><label>โทรศัพท์</label><input id="c-tel" type="text"></div>
-            <div class="field"><label>แฟกซ์</label><input id="c-fax" type="text"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>อีเมล</label><input id="c-email" type="email"></div>
-            <div class="field"><label>เว็บไซต์</label><input id="c-web" type="text"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>Facebook</label><input id="c-fb" type="text"></div>
-            <div class="field"><label>Line ID</label><input id="c-line" type="text"></div>
-          </div>
-          <div class="field" style="margin:0"><label>Google Maps Embed URL</label><input id="c-map" type="text" placeholder="https://maps.google.com/maps?q=..."></div>
-        </div>
-      </section>
-
-      <!-- MESSAGES -->
-      <section class="page" id="page-messages">
-        <div class="page-hero-overlay"><div><p>Inbox</p><h2>กล่องข้อความ</h2></div></div>
-        <div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>หัวข้อ</th><th>วันที่</th><th>สถานะ</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-messages"></tbody></table></div>
-      </section>
-
-      <!-- USERS -->
-      <section class="page" id="page-users">
-        <div class="page-hero-overlay"><div><p>System</p><h2>ผู้ใช้ระบบ</h2></div><button class="btn-gradient" onclick="openItem('users')"><i class="fa-solid fa-plus"></i> เพิ่มผู้ใช้</button></div>
-        <div class="table-wrap"><table><thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ - สกุล</th><th>บทบาท</th><th style="width:130px">จัดการ</th></tr></thead><tbody id="tbl-users"></tbody></table></div>
-      </section>
-
-      <!-- SETTINGS -->
-      <section class="page" id="page-settings">
-        <div class="page-hero-overlay"><div><p>System</p><h2>ตั้งค่าระบบ</h2></div><button class="btn-gradient" onclick="saveSettings()"><i class="fa-solid fa-check"></i> บันทึก</button></div>
-        <div class="glass-card">
-          <div class="field"><label>ชื่อเว็บไซต์ (Title)</label><input id="set-title" type="text"></div>
-          <div class="field"><label>คำอธิบาย (Meta Description)</label><textarea id="set-desc"></textarea></div>
-          <div class="field"><label>คีย์เวิร์ด (Meta Keywords)</label><input id="set-kw" type="text"></div>
-          <div class="field-row">
-            <div class="field"><label>ภาษาเริ่มต้น</label><select id="set-lang"><option value="th">ภาษาไทย</option><option value="en">English</option></select></div>
-            <div class="field"><label>โหมดบำรุงรักษา</label><select id="set-maint"><option value="0">ปิด</option><option value="1">เปิด</option></select></div>
-          </div>
-          <div class="field" style="margin:0"><label>Google Analytics ID</label><input id="set-ga" type="text" placeholder="G-XXXXXXXXXX"></div>
-        </div>
-        <div class="glass-card" style="margin-top:22px;border-color:rgba(231,76,60,0.3)">
-          <h3 style="color:#ff8071"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
-          <p style="color:var(--color-text-muted);font-size:13.5px;margin-bottom:18px;line-height:1.7">ล้างข้อมูลทั้งหมดและคืนค่าเริ่มต้น การกระทำนี้ไม่สามารถย้อนกลับได้</p>
-          <button class="btn danger" onclick="resetAll()"><i class="fa-solid fa-trash"></i> ล้างข้อมูลทั้งหมด</button>
-        </div>
-        <!-- content -->
-         <div class="modern-glass-card" style="margin-top: 30px;">
-    <div class="contact-form-header">
-        <h3><i class="fa-solid fa-wand-magic-sparkles" style="color: #2ecc71;"></i> ระบบจัดการ Template และรูปภาพอัจฉริยะ</h3>
-        <p>ปรับแต่งรูปพื้นหลัง เลย์เอาต์ และข้อมูลตัวหนังสือในหน้าหลักได้ทันทีโดยไม่ต้องแก้ไขโค้ด</p>
+    <div class="nav-section">
+      <div class="nav-section-label">ภาพรวม</div>
+      <div class="nav-item active" onclick="gotoPage('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
     </div>
 
-    <form id="admin-config-form" onsubmit="saveWebConfig(event)" class="input-group">
-        <div class="input-row">
-            <div class="input-field-wrapper">
-                <label>รูปแบบเลย์เอาต์หน้าแรก (Template Layout)</label>
-                <select id="cfg-layout">
-                    <option value="grid-carousel">แบบมาตรฐาน (เนื้อหาคู่สไลด์รูปภาพคาร์เซล)</option>
-                    <option value="minimal">แบบมินิมอล (เน้นข้อความกว้างเดี่ยว ซ่อนสไลด์ขวา)</option>
-                </select>
-            </div>
-            <div class="input-field-wrapper">
-                <label>ธีมสีหลักของระบบ (Theme Style)</label>
-                <select id="cfg-theme">
-                    <option value="cyber-dark">Premium Cyber Dark Green (ธีมเขียว-มืด เรืองแสง)</option>
-                </select>
-            </div>
+    <div class="nav-section">
+      <div class="nav-section-label">จัดการเนื้อหา</div>
+      <div class="nav-item" onclick="gotoPage('section-editor',this)"><i class="fa-solid fa-pen-to-square"></i> แก้ไขหน้าเว็บ</div>
+      <div class="nav-item" onclick="gotoPage('text-manager',this)"><i class="fa-solid fa-align-left"></i> จัดการข้อความ</div>
+      <div class="nav-item" onclick="gotoPage('image-manager',this)"><i class="fa-solid fa-images"></i> จัดการรูปภาพ</div>
+      <div class="nav-item" onclick="gotoPage('template-manager',this)"><i class="fa-solid fa-layer-group"></i> เปลี่ยน Template</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">หน้าเว็บทั้งหมด</div>
+      <div class="nav-item" onclick="gotoPage('page-manager',this)"><i class="fa-solid fa-sitemap"></i> จัดการหน้า</div>
+      <div class="nav-item" onclick="gotoPage('messages',this)"><i class="fa-solid fa-envelope"></i> ข้อความ/ติดต่อ <span class="badge" id="badge-msg">0</span></div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">ระบบ</div>
+      <div class="nav-item" onclick="gotoPage('settings',this)"><i class="fa-solid fa-gear"></i> ตั้งค่าเว็บไซต์</div>
+      <div class="nav-item" onclick="gotoPage('seo',this)"><i class="fa-solid fa-magnifying-glass"></i> SEO & Meta</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="previewSite()"><i class="fa-solid fa-eye"></i> ดูหน้าเว็บ</div>
+      <div class="nav-item" style="color:var(--danger);" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title"><span id="page-title">Dashboard</span></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="resetAll()"><i class="fa-solid fa-rotate-left"></i> รีเซ็ต</button>
+        <button class="btn btn-primary" onclick="saveAll()"><i class="fa-solid fa-floppy-disk"></i> บันทึกทั้งหมด</button>
+        <button class="btn btn-ghost" onclick="previewSite()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Preview</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat-card"><i class="fa-solid fa-file stat-icon"></i><div class="stat-num" id="stat-pages">12</div><div class="stat-lbl">หน้าเว็บทั้งหมด</div></div>
+          <div class="stat-card"><i class="fa-solid fa-image stat-icon"></i><div class="stat-num" id="stat-images">0</div><div class="stat-lbl">รูปภาพที่จัดการ</div></div>
+          <div class="stat-card"><i class="fa-solid fa-envelope stat-icon"></i><div class="stat-num" id="stat-msgs">0</div><div class="stat-lbl">ข้อความที่ยังไม่อ่าน</div></div>
+          <div class="stat-card"><i class="fa-solid fa-clock stat-icon"></i><div class="stat-num" id="stat-save" style="font-size:14px;margin-top:6px;">-</div><div class="stat-lbl">บันทึกล่าสุด</div></div>
         </div>
 
-        <div class="input-row">
-            <div class="input-field-wrapper">
-                <label>การแสดงส่วนวิดีโอแนะนำบริษัท</label>
-                <select id="cfg-video">
-                    <option value="true">เปิดการแสดงผล (Show)</option>
-                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
-                </select>
-            </div>
-            <div class="input-field-wrapper">
-                <label>การแสดงแถบตัวเลขอาร์เรย์สถิติ (Analytics Strip)</label>
-                <select id="cfg-analytics">
-                    <option value="true">เปิดการแสดงผล (Show)</option>
-                    <option value="false">ซ่อนส่วนนี้ชั่วคราว (Hide)</option>
-                </select>
-            </div>
+        <div class="quick-actions">
+          <div class="qa-btn" onclick="gotoPage('section-editor',null)"><i class="fa-solid fa-pen-to-square"></i><span>แก้ไขหน้าหลัก</span></div>
+          <div class="qa-btn" onclick="gotoPage('image-manager',null)"><i class="fa-solid fa-images"></i><span>อัปโหลดรูปภาพ</span></div>
+          <div class="qa-btn" onclick="gotoPage('template-manager',null)"><i class="fa-solid fa-layer-group"></i><span>เปลี่ยน Template</span></div>
+          <div class="qa-btn" onclick="gotoPage('messages',null)"><i class="fa-solid fa-envelope"></i><span>ดูข้อความ</span></div>
         </div>
 
-        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
-            <h4><i class="fa-solid fa-image"></i> การจัดการรูปภาพในเว็บไซต์ (Image Asset Links)</h4>
-        </div>
-        <div class="input-field-wrapper">
-            <label>ลิงก์รูปภาพพื้นหลังสุดพรีเมียม (Main Wallpaper URL)</label>
-            <input type="text" id="cfg-bg-url" placeholder="วางลิงก์รูปภาพ https://...">
-        </div>
-        
-        <div class="input-row">
-            <div class="input-field-wrapper">
-                <label>รูปสไลด์ที่ 1 (Carousel Image 1)</label>
-                <input type="text" id="cfg-c1-url" placeholder="ลิงก์รูปสไลด์ตัวที่หนึ่ง">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="editor-card">
+            <div class="ec-title"><i class="fa-solid fa-bolt"></i> การดำเนินการด่วน</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-ghost" onclick="gotoPage('section-editor',null)" style="justify-content:flex-start;"><i class="fa-solid fa-house"></i> แก้ไข Hero Section (หน้าแรก)</button>
+              <button class="btn btn-ghost" onclick="gotoPage('section-editor',null);switchEditorTab('about')" style="justify-content:flex-start;"><i class="fa-solid fa-building"></i> แก้ไขหน้า "บริษัทของเรา"</button>
+              <button class="btn btn-ghost" onclick="gotoPage('section-editor',null);switchEditorTab('products')" style="justify-content:flex-start;"><i class="fa-solid fa-flask"></i> แก้ไขหน้า "ผลิตภัณฑ์"</button>
+              <button class="btn btn-ghost" onclick="gotoPage('section-editor',null);switchEditorTab('contact')" style="justify-content:flex-start;"><i class="fa-solid fa-envelope"></i> แก้ไขหน้า "ติดต่อเรา"</button>
             </div>
-            <div class="input-field-wrapper">
-                <label>รูปสไลด์ที่ 2 (Carousel Image 2)</label>
-                <input type="text" id="cfg-c2-url" placeholder="ลิงก์รูปสไลด์ตัวที่สอง">
+          </div>
+          <div class="editor-card">
+            <div class="ec-title"><i class="fa-solid fa-circle-info"></i> คำแนะนำการใช้งาน</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.7;">
+              <div><i class="fa-solid fa-check" style="color:var(--green);margin-right:8px;"></i>แก้ไขข้อความแต่ละส่วนได้ที่ <b style="color:var(--text);">แก้ไขหน้าเว็บ</b></div>
+              <div><i class="fa-solid fa-check" style="color:var(--green);margin-right:8px;"></i>อัปโหลด/เปลี่ยนรูปภาพที่ <b style="color:var(--text);">จัดการรูปภาพ</b></div>
+              <div><i class="fa-solid fa-check" style="color:var(--green);margin-right:8px;"></i>เปลี่ยนธีมและ Layout ที่ <b style="color:var(--text);">เปลี่ยน Template</b></div>
+              <div><i class="fa-solid fa-check" style="color:var(--green);margin-right:8px;"></i>กด <b style="color:var(--green);">บันทึกทั้งหมด</b> เพื่อบันทึกการเปลี่ยนแปลง</div>
+              <div><i class="fa-solid fa-check" style="color:var(--green);margin-right:8px;"></i>กด <b style="color:var(--text);">Preview</b> เพื่อดูหน้าเว็บจริง</div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION EDITOR ═══ -->
+      <div class="page" id="page-section-editor">
+        <div class="section-tabs">
+          <div class="stab active" onclick="switchEditorTab('home',this)"><i class="fa-solid fa-house"></i> หน้าแรก</div>
+          <div class="stab" onclick="switchEditorTab('about',this)"><i class="fa-solid fa-building"></i> เกี่ยวกับ</div>
+          <div class="stab" onclick="switchEditorTab('products',this)"><i class="fa-solid fa-flask"></i> ผลิตภัณฑ์</div>
+          <div class="stab" onclick="switchEditorTab('vision',this)"><i class="fa-solid fa-eye"></i> วิสัยทัศน์</div>
+          <div class="stab" onclick="switchEditorTab('news',this)"><i class="fa-solid fa-newspaper"></i> ข่าวสาร</div>
+          <div class="stab" onclick="switchEditorTab('csr',this)"><i class="fa-solid fa-leaf"></i> CSR</div>
+          <div class="stab" onclick="switchEditorTab('contact',this)"><i class="fa-solid fa-envelope"></i> ติดต่อ</div>
+          <div class="stab" onclick="switchEditorTab('jobs',this)"><i class="fa-solid fa-user-tie"></i> ร่วมงาน</div>
         </div>
 
-        <div class="contact-form-header" style="margin-top:20px; border-top: 1px solid rgba(46,204,113,0.15); padding-top:20px;">
-            <h4><i class="fa-solid fa-file-lines"></i> แก้ไขเนื้อหาข้อความหลัก (Hero Content)</h4>
-        </div>
-        <div class="input-field-wrapper">
-            <label>หัวข้อเด่นหน้าแรก (รองรับแท็กสปันสีเขียวเรืองแสงด้วยการใส่ <span>ข้อความ</span>)</label>
-            <input type="text" id="cfg-hero-title">
-        </div>
-        <div class="input-field-wrapper">
-            <label>คำอธิบายย่อรายละเอียดบริษัท (Hero Subtitle)</label>
-            <textarea id="cfg-hero-subtitle"></textarea>
+        <!-- HOME -->
+        <div id="etab-home" class="editor-tab">
+          <div class="editor-grid">
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-heading"></i> Hero Section — ข้อความหลัก</div>
+              <div class="form-row"><label>ชื่อหัวข้อหลัก (Hero Title)</label><input type="text" id="f-hero-title" placeholder="NTEQ POLYMER — Premium Green Innovation"></div>
+              <div class="form-row"><label>ชื่อรอง (Subtitle / สีเขียว)</label><input type="text" id="f-hero-subtitle" placeholder="Premium Green Innovation"></div>
+              <div class="form-row"><label>คำอธิบาย (Description)</label><textarea id="f-hero-desc" placeholder="วัสดุพอลิเมอร์ยุคใหม่..."></textarea></div>
+              <div class="form-row"><label>ปุ่มหลัก (CTA Button Text)</label><input type="text" id="f-hero-btn" placeholder="สำรวจนวัตกรรม"></div>
+            </div>
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-chart-bar"></i> สถิติ / Analytics Strip</div>
+              <div style="margin-bottom:16px;">
+                <div class="form-row"><label>ตัวเลขที่ 1</label><input type="text" id="f-stat1-num" placeholder="15,000+"></div>
+                <div class="form-row"><label>ชื่อสถิติที่ 1</label><input type="text" id="f-stat1-lbl" placeholder="ตัน / กำลังการผลิตต่อปี"></div>
+              </div>
+              <div style="margin-bottom:16px;">
+                <div class="form-row"><label>ตัวเลขที่ 2</label><input type="text" id="f-stat2-num" placeholder="100%"></div>
+                <div class="form-row"><label>ชื่อสถิติที่ 2</label><input type="text" id="f-stat2-lbl" placeholder="ยางธรรมชาติมาตรฐานสากล"></div>
+              </div>
+              <div>
+                <div class="form-row"><label>ตัวเลขที่ 3</label><input type="text" id="f-stat3-num" placeholder="25+"></div>
+                <div class="form-row"><label>ชื่อสถิติที่ 3</label><input type="text" id="f-stat3-lbl" placeholder="พันธมิตรทางการค้าระดับโลก"></div>
+              </div>
+            </div>
+            <div class="editor-card full">
+              <div class="ec-title"><i class="fa-solid fa-image"></i> รูปภาพ Hero Background</div>
+              <div class="form-row"><label>URL รูปพื้นหลัง Hero</label><input type="text" id="f-hero-bg" placeholder="https://..."><div class="form-hint">ใส่ URL รูปภาพหรืออัปโหลดในหัวข้อ "จัดการรูปภาพ"</div></div>
+              <div class="form-row"><label>Carousel รูปที่ 1</label><input type="text" id="f-car1" placeholder="https://..."></div>
+              <div class="form-row"><label>Carousel รูปที่ 2</label><input type="text" id="f-car2" placeholder="https://..."></div>
+              <div class="form-row"><label>Carousel รูปที่ 3</label><input type="text" id="f-car3" placeholder="https://..."></div>
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="btn-gradient" style="margin-top: 15px; width: 100%; justify-content: center;">
-            <i class="fa-solid fa-floppy-disk"></i> บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมด
-        </button>
-    </form>
-</div>
-      </section>
+        <!-- ABOUT -->
+        <div id="etab-about" class="editor-tab" style="display:none;">
+          <div class="editor-grid">
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-building"></i> หน้าข้อมูลบริษัท</div>
+              <div class="form-row"><label>ชื่อบริษัท</label><input type="text" id="f-about-name" placeholder="NTEQ POLYMER CO., LTD."></div>
+              <div class="form-row"><label>ประวัติบริษัท</label><textarea id="f-about-history" style="min-height:120px;" placeholder="ก่อตั้งเมื่อปี..."></textarea></div>
+              <div class="form-row"><label>วิสัยทัศน์</label><textarea id="f-about-vision" placeholder="มุ่งมั่นสู่..."></textarea></div>
+              <div class="form-row"><label>พันธกิจ</label><textarea id="f-about-mission" placeholder="สร้างสรรค์..."></textarea></div>
+            </div>
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-image"></i> รูปภาพ About</div>
+              <div class="form-row"><label>Banner รูปหลัก About</label><input type="text" id="f-about-img" placeholder="https://..."></div>
+              <div id="about-img-preview" style="margin-top:10px;border-radius:10px;overflow:hidden;display:none;"><img style="width:100%;height:140px;object-fit:cover;" id="about-img-prev-tag"></div>
+              <div class="form-row" style="margin-top:14px;"><label>ที่อยู่โรงงาน</label><textarea id="f-about-addr" placeholder="123 ถนน..."></textarea></div>
+              <div class="form-row"><label>เบอร์โทรศัพท์</label><input type="text" id="f-about-tel" placeholder="02-xxx-xxxx"></div>
+              <div class="form-row"><label>อีเมล</label><input type="text" id="f-about-email" placeholder="info@nteq.co.th"></div>
+            </div>
+          </div>
+        </div>
 
-    </main>
+        <!-- PRODUCTS -->
+        <div id="etab-products" class="editor-tab" style="display:none;">
+          <div class="editor-card full">
+            <div class="ec-title"><i class="fa-solid fa-flask"></i> จัดการผลิตภัณฑ์</div>
+            <div id="products-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+            <button class="btn btn-ghost" style="margin-top:16px;" onclick="addProduct()"><i class="fa-solid fa-plus"></i> เพิ่มผลิตภัณฑ์ใหม่</button>
+          </div>
+        </div>
+
+        <!-- VISION -->
+        <div id="etab-vision" class="editor-tab" style="display:none;">
+          <div class="editor-grid">
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-eye"></i> วิสัยทัศน์และพันธกิจ</div>
+              <div class="form-row"><label>หัวข้อวิสัยทัศน์</label><input type="text" id="f-vision-title" placeholder="วิสัยทัศน์ของเรา"></div>
+              <div class="form-row"><label>เนื้อหาวิสัยทัศน์</label><textarea id="f-vision-body" style="min-height:120px;"></textarea></div>
+              <div class="form-row"><label>หัวข้อพันธกิจ</label><input type="text" id="f-mission-title" placeholder="พันธกิจของเรา"></div>
+              <div class="form-row"><label>เนื้อหาพันธกิจ</label><textarea id="f-mission-body" style="min-height:120px;"></textarea></div>
+            </div>
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-star"></i> ค่านิยมองค์กร</div>
+              <div id="values-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+              <button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="addValue()"><i class="fa-solid fa-plus"></i> เพิ่มค่านิยม</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEWS -->
+        <div id="etab-news" class="editor-tab" style="display:none;">
+          <div class="editor-card full">
+            <div class="ec-title"><i class="fa-solid fa-newspaper"></i> จัดการข่าวสาร</div>
+            <div id="news-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+            <button class="btn btn-ghost" style="margin-top:16px;" onclick="addNews()"><i class="fa-solid fa-plus"></i> เพิ่มข่าวสารใหม่</button>
+          </div>
+        </div>
+
+        <!-- CSR -->
+        <div id="etab-csr" class="editor-tab" style="display:none;">
+          <div class="editor-card full">
+            <div class="ec-title"><i class="fa-solid fa-leaf"></i> กิจกรรมเพื่อสังคม (CSR)</div>
+            <div id="csr-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+            <button class="btn btn-ghost" style="margin-top:16px;" onclick="addCSR()"><i class="fa-solid fa-plus"></i> เพิ่มกิจกรรม CSR</button>
+          </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div id="etab-contact" class="editor-tab" style="display:none;">
+          <div class="editor-grid">
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-envelope"></i> ข้อมูลติดต่อ</div>
+              <div class="form-row"><label>ที่อยู่</label><textarea id="f-contact-addr" placeholder="เลขที่ ..."></textarea></div>
+              <div class="form-row"><label>เบอร์โทร</label><input type="text" id="f-contact-tel" placeholder="02-xxx-xxxx"></div>
+              <div class="form-row"><label>อีเมล</label><input type="text" id="f-contact-email" placeholder="info@nteq.co.th"></div>
+              <div class="form-row"><label>Line Official</label><input type="text" id="f-contact-line" placeholder="@nteq"></div>
+              <div class="form-row"><label>Facebook</label><input type="text" id="f-contact-fb" placeholder="https://facebook.com/..."></div>
+            </div>
+            <div class="editor-card">
+              <div class="ec-title"><i class="fa-solid fa-map"></i> Google Maps Embed URL</div>
+              <div class="form-row"><label>Map Embed URL</label><textarea id="f-contact-map" placeholder="https://www.google.com/maps/embed?pb=..." style="min-height:80px;"></textarea></div>
+              <div class="form-row"><label>เวลาทำการ (บรรทัดที่ 1)</label><input type="text" id="f-hours1" placeholder="จันทร์ - ศุกร์: 8:00 - 17:00"></div>
+              <div class="form-row"><label>เวลาทำการ (บรรทัดที่ 2)</label><input type="text" id="f-hours2" placeholder="เสาร์ - อาทิตย์: ปิดทำการ"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JOBS -->
+        <div id="etab-jobs" class="editor-tab" style="display:none;">
+          <div class="editor-card full">
+            <div class="ec-title"><i class="fa-solid fa-user-tie"></i> ตำแหน่งงานที่เปิดรับ</div>
+            <div id="jobs-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+            <button class="btn btn-ghost" style="margin-top:16px;" onclick="addJob()"><i class="fa-solid fa-plus"></i> เพิ่มตำแหน่งงาน</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TEXT MANAGER ═══ -->
+      <div class="page" id="page-text-manager">
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-align-left"></i> จัดการข้อความทั้งหมดในเว็บ</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">แก้ไขข้อความแต่ละส่วนด้านล่าง แล้วกด "บันทึกทั้งหมด" เพื่อบันทึก</p>
+          <div class="text-blocks" id="text-blocks-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ IMAGE MANAGER ═══ -->
+      <div class="page" id="page-image-manager">
+        <div class="editor-card full" style="margin-bottom:20px;">
+          <div class="ec-title"><i class="fa-solid fa-cloud-arrow-up"></i> อัปโหลดรูปภาพใหม่</div>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+            <i class="fa-solid fa-image"></i>
+            <p>ลากรูปภาพมาวางที่นี่ หรือ <span>คลิกเพื่อเลือกไฟล์</span></p>
+            <p style="margin-top:6px;font-size:11px;">รองรับ JPG, PNG, WebP, GIF — ขนาดสูงสุด 10MB</p>
+          </div>
+          <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this.files)">
+          <div style="margin-top:16px;">
+            <div class="form-row"><label>หรือใส่ URL รูปภาพจากอินเทอร์เน็ต</label>
+              <div style="display:flex;gap:10px;">
+                <input type="text" id="img-url-input" placeholder="https://images.example.com/photo.jpg" style="flex:1;">
+                <button class="btn btn-primary" onclick="addImageByUrl()"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-images"></i> รูปภาพทั้งหมด <span id="img-count" style="font-weight:400;color:var(--muted);font-size:13px;">(0 รูป)</span></div>
+          <div class="img-grid" id="img-grid"></div>
+        </div>
+      </div>
+
+      <!-- ═══ TEMPLATE MANAGER ═══ -->
+      <div class="page" id="page-template-manager">
+        <div class="editor-card full" style="margin-bottom:20px;">
+          <div class="ec-title"><i class="fa-solid fa-palette"></i> เลือก Theme / สีธีม</div>
+          <div class="template-grid">
+            <div class="tpl-card selected" id="tpl-cyber-dark" onclick="selectTheme('cyber-dark',this)">
+              <div class="tpl-preview" style="background:linear-gradient(135deg,#020904,#041208);"><span style="font-size:14px;color:#2ecc71;font-weight:700;letter-spacing:2px;">CYBER DARK</span><div class="tpl-badge">ใช้อยู่</div></div>
+              <div class="tpl-info"><div class="tpl-name">Cyber Dark Green</div><div class="tpl-desc">ธีมมืด เขียว เทคโนโลยี (ค่าเริ่มต้น)</div></div>
+            </div>
+            <div class="tpl-card" id="tpl-clean-light" onclick="selectTheme('clean-light',this)">
+              <div class="tpl-preview" style="background:linear-gradient(135deg,#f8fdf9,#e8f5ed);"><span style="font-size:14px;color:#16a34a;font-weight:700;letter-spacing:2px;">CLEAN LIGHT</span></div>
+              <div class="tpl-info"><div class="tpl-name">Clean Light</div><div class="tpl-desc">ธีมสว่าง สะอาด ทันสมัย</div></div>
+            </div>
+            <div class="tpl-card" id="tpl-navy-pro" onclick="selectTheme('navy-pro',this)">
+              <div class="tpl-preview" style="background:linear-gradient(135deg,#0a0e1a,#1a2340);"><span style="font-size:14px;color:#3b82f6;font-weight:700;letter-spacing:2px;">NAVY PRO</span></div>
+              <div class="tpl-info"><div class="tpl-name">Navy Professional</div><div class="tpl-desc">ธีมน้ำเงินเข้ม ดูเป็นมืออาชีพ</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-card full" style="margin-bottom:20px;">
+          <div class="ec-title"><i class="fa-solid fa-layer-group"></i> Layout Hero Section</div>
+          <div class="template-grid">
+            <div class="tpl-card selected" id="layout-grid" onclick="selectLayout('grid-carousel',this)">
+              <div class="tpl-preview" style="background:#040e07;gap:12px;flex-direction:column;padding:16px;">
+                <div style="display:flex;gap:10px;width:100%;">
+                  <div style="flex:1.1;background:rgba(46,204,113,0.15);border-radius:6px;height:55px;"></div>
+                  <div style="flex:0.9;background:rgba(46,204,113,0.08);border-radius:6px;height:55px;"></div>
+                </div>
+              </div>
+              <div class="tpl-info"><div class="tpl-name">Grid + Carousel</div><div class="tpl-desc">ข้อความซ้าย รูปสไลด์ขวา (ค่าเริ่มต้น)</div></div>
+            </div>
+            <div class="tpl-card" id="layout-banner" onclick="selectLayout('full-banner',this)">
+              <div class="tpl-preview" style="background:#040e07;padding:16px;">
+                <div style="width:100%;height:70px;background:rgba(46,204,113,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:11px;color:var(--green);">FULL WIDTH BANNER</span></div>
+              </div>
+              <div class="tpl-info"><div class="tpl-name">Full Banner</div><div class="tpl-desc">Banner เต็มความกว้าง</div></div>
+            </div>
+            <div class="tpl-card" id="layout-minimal" onclick="selectLayout('minimal',this)">
+              <div class="tpl-preview" style="background:#040e07;padding:20px;flex-direction:column;align-items:flex-start;gap:8px;">
+                <div style="width:70%;height:12px;background:rgba(46,204,113,0.4);border-radius:4px;"></div>
+                <div style="width:50%;height:8px;background:rgba(46,204,113,0.2);border-radius:4px;"></div>
+                <div style="width:30%;height:8px;background:rgba(46,204,113,0.2);border-radius:4px;"></div>
+              </div>
+              <div class="tpl-info"><div class="tpl-name">Minimal</div><div class="tpl-desc">ข้อความเพียงอย่างเดียว ไม่มีรูป</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-toggle-on"></i> เปิด/ปิดส่วนต่างๆ ของหน้าเว็บ</div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="tlabel">Analytics Strip (แถบสถิติ)</div><div class="tdesc">แสดงตัวเลขสถิติใต้ Hero Section</div></div>
+            <label class="toggle"><input type="checkbox" id="tog-analytics" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="tlabel">Video Section (ส่วนวิดีโอ)</div><div class="tdesc">แสดงส่วนวิดีโอแนะนำบริษัท</div></div>
+            <label class="toggle"><input type="checkbox" id="tog-video" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="tlabel">Particle Effect (เอฟเฟกต์อนุภาค)</div><div class="tdesc">แสดง particle เคลื่อนไหวในพื้นหลัง</div></div>
+            <label class="toggle"><input type="checkbox" id="tog-particles" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="tlabel">Cursor Glow Effect</div><div class="tdesc">แสดงเอฟเฟกต์แสงตามเมาส์</div></div>
+            <label class="toggle"><input type="checkbox" id="tog-cursor" checked><div class="toggle-track"></div></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE MANAGER ═══ -->
+      <div class="page" id="page-page-manager">
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-sitemap"></i> หน้าเว็บทั้งหมด</div>
+          <div class="page-list">
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-house"></i></div><div class="page-info"><div class="page-name">หน้าแรก (Home)</div><div class="page-path">#home-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('home')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-building"></i></div><div class="page-info"><div class="page-name">ข้อมูลบริษัท (About)</div><div class="page-path">#about-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('about')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-eye"></i></div><div class="page-info"><div class="page-name">วิสัยทัศน์และพันธกิจ</div><div class="page-path">#vision-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('vision')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-flask"></i></div><div class="page-info"><div class="page-name">ผลิตภัณฑ์ (Products)</div><div class="page-path">#products-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('products')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-newspaper"></i></div><div class="page-info"><div class="page-name">ข่าวสารองค์กร (News)</div><div class="page-path">#media-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('news')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-leaf"></i></div><div class="page-info"><div class="page-name">กิจกรรม CSR</div><div class="page-path">#csr-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('csr')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-user-tie"></i></div><div class="page-info"><div class="page-name">ร่วมงานกับเรา (Jobs)</div><div class="page-path">#job-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('jobs')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+            <div class="page-item"><div class="page-icon"><i class="fa-solid fa-envelope"></i></div><div class="page-info"><div class="page-name">ติดต่อเรา (Contact)</div><div class="page-path">#contact-page</div></div><div class="page-status"><div class="status-dot live"></div><span style="font-size:12px;color:var(--green);">Live</span></div><button class="btn btn-ghost btn-sm" onclick="gotoPage('section-editor',null);switchEditorTab('contact')"><i class="fa-solid fa-pen"></i> แก้ไข</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ MESSAGES ═══ -->
+      <div class="page" id="page-messages">
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-envelope"></i> ข้อความจากแบบฟอร์มติดต่อ</div>
+          <div class="msg-list" id="msg-list"><div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-inbox" style="font-size:36px;margin-bottom:12px;display:block;opacity:.3;"></i>ยังไม่มีข้อความใหม่</div></div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <div class="page" id="page-settings">
+        <div class="editor-grid">
+          <div class="editor-card">
+            <div class="ec-title"><i class="fa-solid fa-globe"></i> ข้อมูลเว็บไซต์</div>
+            <div class="form-row"><label>ชื่อเว็บไซต์ (Site Title)</label><input type="text" id="f-site-title" placeholder="NTEQ POLYMER"></div>
+            <div class="form-row"><label>คำอธิบายเว็บไซต์</label><textarea id="f-site-desc" placeholder="บริษัทผลิตยางพาราคุณภาพสูง..."></textarea></div>
+            <div class="form-row"><label>Keywords (คั่นด้วยจุลภาค)</label><input type="text" id="f-site-keys" placeholder="ยางพารา, polymer, rubber, thailand"></div>
+            <div class="form-row"><label>URL Favicon (ไอคอนแท็บ)</label><input type="text" id="f-favicon" placeholder="https://..."></div>
+          </div>
+          <div class="editor-card">
+            <div class="ec-title"><i class="fa-solid fa-lock"></i> เปลี่ยนรหัสผ่าน Admin</div>
+            <div class="form-row"><label>รหัสผ่านปัจจุบัน</label><input type="password" id="f-old-pass" placeholder="••••••••"></div>
+            <div class="form-row"><label>รหัสผ่านใหม่</label><input type="password" id="f-new-pass" placeholder="••••••••"></div>
+            <div class="form-row"><label>ยืนยันรหัสผ่านใหม่</label><input type="password" id="f-conf-pass" placeholder="••••••••"></div>
+            <button class="btn btn-primary btn-sm" onclick="changePassword()"><i class="fa-solid fa-key"></i> เปลี่ยนรหัสผ่าน</button>
+          </div>
+          <div class="editor-card full">
+            <div class="ec-title"><i class="fa-solid fa-share-nodes"></i> Social Media Links</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-row"><label><i class="fa-brands fa-facebook" style="color:#1877f2;margin-right:6px;"></i>Facebook URL</label><input type="text" id="f-fb" placeholder="https://facebook.com/nteqpolymer"></div>
+              <div class="form-row"><label><i class="fa-brands fa-line" style="color:#06c755;margin-right:6px;"></i>Line Official</label><input type="text" id="f-line" placeholder="@nteq"></div>
+              <div class="form-row"><label><i class="fa-brands fa-instagram" style="color:#e1306c;margin-right:6px;"></i>Instagram</label><input type="text" id="f-ig" placeholder="https://instagram.com/..."></div>
+              <div class="form-row"><label><i class="fa-brands fa-youtube" style="color:#ff0000;margin-right:6px;"></i>YouTube</label><input type="text" id="f-yt" placeholder="https://youtube.com/..."></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SEO ═══ -->
+      <div class="page" id="page-seo">
+        <div class="editor-card full">
+          <div class="ec-title"><i class="fa-solid fa-magnifying-glass"></i> SEO & Open Graph</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-row"><label>Page Title (แท็กเบราว์เซอร์)</label><input type="text" id="f-seo-title" placeholder="NTEQ POLYMER - Premium Green Innovation"></div>
+            <div class="form-row"><label>Meta Description</label><textarea id="f-seo-desc" placeholder="คำอธิบายหน้าเว็บสำหรับ Google..." style="min-height:60px;"></textarea></div>
+            <div class="form-row"><label>OG Title (แชร์ Facebook)</label><input type="text" id="f-og-title" placeholder="NTEQ POLYMER"></div>
+            <div class="form-row"><label>OG Description</label><textarea id="f-og-desc" style="min-height:60px;" placeholder="คำอธิบายสำหรับการแชร์..."></textarea></div>
+            <div class="form-row"><label>OG Image URL (รูปตอนแชร์)</label><input type="text" id="f-og-img" placeholder="https://...1200x630px"></div>
+            <div class="form-row"><label>Canonical URL</label><input type="text" id="f-canonical" placeholder="https://www.nteqpolymer.com"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- IMAGE MODAL -->
+<div class="modal-backdrop" id="img-modal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-head">
+      <h3 id="img-modal-title">รูปภาพ</h3>
+      <button class="modal-close" onclick="closeModal('img-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <img id="img-modal-img" style="width:100%;border-radius:10px;max-height:400px;object-fit:contain;background:#000;">
+      <div style="margin-top:14px;">
+        <div class="form-row"><label>URL รูปภาพ</label><input type="text" id="img-modal-url" readonly></div>
+        <div class="form-row"><label>ใช้รูปนี้เป็น...</label>
+          <select id="img-use-for">
+            <option value="">-- เลือกตำแหน่ง --</option>
+            <option value="hero-bg">Hero Background</option>
+            <option value="carousel-1">Carousel รูปที่ 1</option>
+            <option value="carousel-2">Carousel รูปที่ 2</option>
+            <option value="carousel-3">Carousel รูปที่ 3</option>
+            <option value="about-img">About Banner</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" onclick="deleteCurrentImg()"><i class="fa-solid fa-trash"></i> ลบรูป</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('img-modal')">ปิด</button>
+      <button class="btn btn-primary btn-sm" onclick="applyImageTo()"><i class="fa-solid fa-check"></i> ใช้รูปนี้</button>
+    </div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-bg" id="modal-bg">
+<!-- MSG MODAL -->
+<div class="modal-backdrop" id="msg-modal">
   <div class="modal">
-    <h2 id="modal-title">เพิ่มรายการ</h2>
-    <div class="sub" id="modal-sub">กรอกข้อมูลให้ครบถ้วน</div>
-    <div id="modal-body"></div>
-    <div class="modal-actions">
-      <button class="btn ghost" onclick="closeModal()">ยกเลิก</button>
-      <button class="btn-gradient" onclick="saveModal()"><i class="fa-solid fa-check"></i> บันทึก</button>
+    <div class="modal-head">
+      <h3>รายละเอียดข้อความ</h3>
+      <button class="modal-close" onclick="closeModal('msg-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="msg-modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" onclick="deleteCurMsg()"><i class="fa-solid fa-trash"></i> ลบข้อความ</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('msg-modal')">ปิด</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg">บันทึกสำเร็จ</span></div>
+<div class="toast-container" id="toast-container"></div>
 
 <script>
-/* =============== STATE =============== */
-const STORAGE_KEY='nteq_admin_data_v1';
-const AUTH_KEY='nteq_admin_auth';
-const DEFAULT_USERS=[{username:'admin',password:'admin123',name:'ผู้ดูแลระบบ',role:'admin'}];
+// ═══════════════════════════════════════════════════════════
+// NTEQ ADMIN CMS — Full JavaScript Engine
+// ═══════════════════════════════════════════════════════════
+const KEY = 'nteq_admin_data_v1';
+const POOL_KEY = 'nteq_dynamic_pool_v1';
+const AUTH_KEY = 'nteq_admin_auth';
+const PASS_KEY = 'nteq_admin_pass';
+const IMG_KEY = 'nteq_images_v1';
 
-const defaultData=()=>({
-  hero:{title:'นวัตกรรมยางพาราเขียว',subtitle:'วิวัฒนาการเพื่อสิ่งแวดล้อม',desc:'วัสดุพอลิเมอร์ยุคใหม่ที่ออกแบบมาเพื่อขับเคลื่อนระบบนิเวศอุตสาหกรรมระดับโลกอย่างยั่งยืน',btn:'สำรวจผลิตภัณฑ์',c1n:15,c1l:'ปีแห่งประสบการณ์',c2n:500,c2l:'โครงการที่เสร็จสิ้น',c3n:100,c3l:'พันธมิตรเครือข่ายทั่วโลก'},
-  about:{name:'NTEQ POLYMER',slogan:'Premium Green Innovation',about:'ผู้นำด้านนวัตกรรมพอลิเมอร์สีเขียวเพื่อโลกอนาคต',vision:'เป็นผู้นำระดับโลกด้านวัสดุพอลิเมอร์ที่ยั่งยืน',mission:'พัฒนาผลิตภัณฑ์ที่เป็นมิตรต่อสิ่งแวดล้อม',year:2010},
-  contact:{addr:'319 หมู่ 16 ถ.ชยางกูร ต.คำป่าหลาย อ.เมืองมุกดาหาร จ.มุกดาหาร 49000',tel:'02-xxx-xxxx',fax:'',email:'info@nteq-polymer.com',web:'www.nteq-polymer.com',fb:'',line:'',map:'https://maps.google.com/maps?q=NTEQ+Polymer+Co+Ltd+Mukdahan+Thailand&t=&z=15&ie=UTF8&iwloc=&output=embed'},
-  settings:{title:'NTEQ POLYMER - Premium Green Innovation',desc:'ผู้นำด้านนวัตกรรมพอลิเมอร์สีเขียว',kw:'polymer,rubber,green innovation',lang:'th',maint:'0',ga:''},
-  products:[{id:1,name:'Green Rubber Compound',cat:'Compound',status:'active',desc:'สูตรยางพาราเขียวมาตรฐานสูง'},{id:2,name:'Eco Polymer Sheet',cat:'Sheet',status:'active',desc:'แผ่นพอลิเมอร์รีไซเคิล'}],
-  news:[{id:1,title:'NTEQ ได้รับรางวัล Green Industry 2025',type:'news',date:'2025-03-15',content:'รายละเอียดข่าว...'},{id:2,title:'กิจกรรมปลูกป่าชายเลน',type:'csr',date:'2025-02-20',content:'รายละเอียดกิจกรรม...'}],
-  executives:[{id:1,name:'คุณสมชาย ใจดี',position:'ประธานเจ้าหน้าที่บริหาร',email:'ceo@nteq-polymer.com'}],
-  jobs:[{id:1,title:'วิศวกรเคมี',dept:'R&D',type:'full-time',status:'open'}],
-  messages:[],
-  users:DEFAULT_USERS,
-  meta:{lastSave:null}
-});
+let currentImgIndex = null;
+let currentMsgId = null;
+let images = [];
 
-let data=loadData();
-function loadData(){try{const d=JSON.parse(localStorage.getItem(STORAGE_KEY));return d||defaultData();}catch{return defaultData();}}
-function saveData(){data.meta.lastSave=new Date().toISOString();localStorage.setItem(STORAGE_KEY,JSON.stringify(data));updateMeta();}
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-/* =============== AUTH =============== */
-function doLogin(){
-  const u=document.getElementById('login-user').value.trim();
-  const p=document.getElementById('login-pass').value;
-  const found=data.users.find(x=>x.username===u&&x.password===p);
-  if(!found){document.getElementById('login-err').style.display='block';return;}
-  sessionStorage.setItem(AUTH_KEY,JSON.stringify({username:found.username,name:found.name,role:found.role}));
-  showApp(found);
+// ─── AUTH ───
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value;
+  const savedPass = localStorage.getItem(PASS_KEY) || 'admin1123';
+  if (u === 'admin' && p === savedPass) {
+    localStorage.setItem(AUTH_KEY, '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    initApp();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    setTimeout(() => document.getElementById('login-err').style.display = 'none', 3000);
+  }
 }
-function doLogout(){sessionStorage.removeItem(AUTH_KEY);location.reload();}
-function showApp(user){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('user-name').textContent=user.name;
-  document.getElementById('user-av').textContent=(user.name||'A').trim().charAt(0);
-  document.getElementById('cur-user').textContent=user.name+' ('+user.role+')';
-  renderAll();
+function doLogout() {
+  localStorage.removeItem(AUTH_KEY);
+  location.reload();
 }
-(function(){const s=sessionStorage.getItem(AUTH_KEY);if(s){showApp(JSON.parse(s));}})();
+function changePassword() {
+  const op = document.getElementById('f-old-pass').value;
+  const np = document.getElementById('f-new-pass').value;
+  const cp = document.getElementById('f-conf-pass').value;
+  const saved = localStorage.getItem(PASS_KEY) || 'admin1123';
+  if (op !== saved) return toast('รหัสผ่านปัจจุบันไม่ถูกต้อง', 'error');
+  if (np !== cp) return toast('รหัสผ่านใหม่ไม่ตรงกัน', 'error');
+  if (np.length < 6) return toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
+  localStorage.setItem(PASS_KEY, np);
+  toast('เปลี่ยนรหัสผ่านสำเร็จ!', 'success');
+  document.getElementById('f-old-pass').value = '';
+  document.getElementById('f-new-pass').value = '';
+  document.getElementById('f-conf-pass').value = '';
+}
 
-/* =============== NAV =============== */
-function goto(p){const el=document.querySelector(`.menu-item[data-page="${p}"]`);if(el)el.click();}
-document.querySelectorAll('.menu-item').forEach(m=>{
-  m.addEventListener('click',()=>{
-    document.querySelectorAll('.menu-item').forEach(x=>x.classList.remove('active'));
-    m.classList.add('active');
-    const p=m.dataset.page;
-    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-    document.getElementById('page-'+p).classList.add('active');
-    if(window.innerWidth<960)document.querySelector('.sidebar').classList.remove('open');
-  });
-});
-
-/* =============== RENDER =============== */
-function renderAll(){
-  for(const k of ['title','subtitle','desc','btn','c1n','c1l','c2n','c2l','c3n','c3l']) {const el=document.getElementById('h-'+k);if(el)el.value=data.hero[k]??'';}
-  for(const k of ['name','slogan','about','vision','mission','year']) {const el=document.getElementById('a-'+k);if(el)el.value=data.about[k]??'';}
-  for(const k of ['addr','tel','fax','email','web','fb','line','map']) {const el=document.getElementById('c-'+k);if(el)el.value=data.contact[k]??'';}
-  for(const k of ['title','desc','kw','lang','maint','ga']) {const el=document.getElementById('set-'+k);if(el)el.value=data.settings[k]??'';}
-
-  renderTable('products',r=>`<td><b>${esc(r.name)}</b></td><td>${esc(r.cat)}</td><td>${badge(r.status)}</td>`);
-  renderTable('news',r=>`<td><b>${esc(r.title)}</b></td><td><span class="badge ${r.type==='csr'?'orange':'green'}">${r.type==='csr'?'CSR':'NEWS'}</span></td><td>${esc(r.date)}</td>`);
-  renderTable('executives',r=>`<td><b>${esc(r.name)}</b></td><td>${esc(r.position)}</td><td style="color:var(--color-text-muted)">${esc(r.email)}</td>`);
-  renderTable('jobs',r=>`<td><b>${esc(r.title)}</b></td><td>${esc(r.dept)}</td><td>${esc(r.type)}</td><td>${badge(r.status)}</td>`);
-  renderTable('users',r=>`<td><b>${esc(r.username)}</b></td><td>${esc(r.name)}</td><td><span class="badge green">${esc(r.role)}</span></td>`);
+// ─── INIT ───
+function initApp() {
+  if (localStorage.getItem(AUTH_KEY) !== '1') return;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadData();
+  loadImages();
   renderMessages();
-  updateStats();
-  updateMeta();
-}
-function badge(s){const m={active:'green',open:'green',inactive:'gray',closed:'gray',unread:'red',read:'gray'};return `<span class="badge ${m[s]||'gray'}">${esc(s)}</span>`;}
-function renderTable(name,rowFn){
-  const tb=document.getElementById('tbl-'+name);if(!tb)return;
-  const rows=data[name]||[];
-  if(!rows.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">ยังไม่มีข้อมูล — กดปุ่ม "เพิ่ม" ด้านบนเพื่อเริ่มต้น</td></tr>`;return;}
-  tb.innerHTML=rows.map(r=>`<tr>${rowFn(r)}<td><div class="row-actions"><button onclick="openItem('${name}',${r.id})"><i class="fa-solid fa-pen"></i></button><button class="del" onclick="delItem('${name}',${r.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`).join('');
-}
-function renderMessages(){
-  const tb=document.getElementById('tbl-messages');const rows=data.messages||[];
-  const unread=rows.filter(m=>m.status==='unread').length;
-  const badge=document.getElementById('msg-badge');
-  if(unread){badge.textContent=unread;badge.style.display='inline-block';}else{badge.style.display='none';}
-  if(!rows.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">ยังไม่มีข้อความ</td></tr>`;return;}
-  tb.innerHTML=rows.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td style="color:var(--color-text-muted)">${esc(r.email)}</td><td>${esc(r.subject)}</td><td>${esc(r.date)}</td><td><span class="badge ${r.status==='unread'?'red':'gray'}">${r.status}</span></td><td><div class="row-actions"><button onclick="viewMsg(${r.id})"><i class="fa-solid fa-eye"></i></button><button class="del" onclick="delItem('messages',${r.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`).join('');
-}
-function updateStats(){
-  document.getElementById('s-products').textContent=(data.products||[]).length;
-  document.getElementById('s-news').textContent=(data.news||[]).length;
-  document.getElementById('s-jobs').textContent=(data.jobs||[]).filter(j=>j.status!=='closed').length;
-  document.getElementById('s-msgs').textContent=(data.messages||[]).filter(m=>m.status==='unread').length;
-}
-function updateMeta(){
-  const ls=data.meta?.lastSave;
-  document.getElementById('last-save').textContent=ls?new Date(ls).toLocaleString('th-TH'):'-';
-  document.getElementById('data-size').textContent=(JSON.stringify(data).length/1024).toFixed(2)+' KB';
+  updateDashboard();
+  initTextBlocks();
+  initProductsList();
+  initNewsList();
+  initCSRList();
+  initJobsList();
+  initValuesList();
+  // preview URL listener
+  document.getElementById('f-about-img').addEventListener('input', function() {
+    const p = document.getElementById('about-img-preview');
+    const img = document.getElementById('about-img-prev-tag');
+    if (this.value) { p.style.display='block'; img.src=this.value; } else p.style.display='none';
+  });
 }
 
-/* =============== SAVE SECTIONS =============== */
-function saveHero(){for(const k of ['title','subtitle','desc','btn']) data.hero[k]=document.getElementById('h-'+k).value;
-  for(const k of ['c1n','c2n','c3n']) data.hero[k]=Number(document.getElementById('h-'+k).value)||0;
-  for(const k of ['c1l','c2l','c3l']) data.hero[k]=document.getElementById('h-'+k).value;
-  saveData();toast('บันทึก Hero สำเร็จ');}
-function saveAbout(){for(const k of ['name','slogan','about','vision','mission']) data.about[k]=document.getElementById('a-'+k).value;
-  data.about.year=Number(document.getElementById('a-year').value)||null;saveData();toast('บันทึกข้อมูลบริษัทสำเร็จ');}
-function saveContact(){for(const k of ['addr','tel','fax','email','web','fb','line','map']) data.contact[k]=document.getElementById('c-'+k).value;saveData();toast('บันทึกการติดต่อสำเร็จ');}
-function saveSettings(){for(const k of ['title','desc','kw','lang','maint','ga']) data.settings[k]=document.getElementById('set-'+k).value;saveData();toast('บันทึกการตั้งค่าสำเร็จ');}
+window.addEventListener('load', () => {
+  if (localStorage.getItem(AUTH_KEY) === '1') initApp();
+});
 
-/* =============== MODAL CRUD =============== */
-const SCHEMAS={
-  products:[{k:'name',l:'ชื่อผลิตภัณฑ์',t:'text',req:1},{k:'cat',l:'หมวดหมู่',t:'text'},{k:'desc',l:'คำอธิบาย',t:'textarea'},{k:'status',l:'สถานะ',t:'select',opts:[['active','เปิดใช้งาน'],['inactive','ปิด']]}],
-  news:[{k:'title',l:'หัวข้อ',t:'text',req:1},{k:'type',l:'ประเภท',t:'select',opts:[['news','ข่าวสาร'],['csr','CSR']]},{k:'date',l:'วันที่',t:'date'},{k:'content',l:'เนื้อหา',t:'textarea'}],
-  executives:[{k:'name',l:'ชื่อ - สกุล',t:'text',req:1},{k:'position',l:'ตำแหน่ง',t:'text'},{k:'email',l:'อีเมล',t:'email'}],
-  jobs:[{k:'title',l:'ชื่อตำแหน่ง',t:'text',req:1},{k:'dept',l:'แผนก',t:'text'},{k:'type',l:'ประเภท',t:'select',opts:[['full-time','Full-time'],['part-time','Part-time'],['contract','Contract']]},{k:'status',l:'สถานะ',t:'select',opts:[['open','เปิดรับ'],['closed','ปิด']]}],
-  users:[{k:'username',l:'ชื่อผู้ใช้',t:'text',req:1},{k:'name',l:'ชื่อ - สกุล',t:'text',req:1},{k:'password',l:'รหัสผ่าน',t:'text',req:1},{k:'role',l:'บทบาท',t:'select',opts:[['admin','Admin'],['editor','Editor']]}]
-};
-let _editing={name:null,id:null};
-function openItem(name,id){
-  _editing={name,id:id||null};
-  const schema=SCHEMAS[name];const row=id?(data[name]||[]).find(x=>x.id===id):{};
-  document.getElementById('modal-title').textContent=(id?'แก้ไข':'เพิ่ม')+' '+({products:'ผลิตภัณฑ์',news:'ข่าว / CSR',executives:'ผู้บริหาร',jobs:'ตำแหน่งงาน',users:'ผู้ใช้'}[name]||'รายการ');
-  document.getElementById('modal-sub').textContent='กรอกข้อมูลให้ครบถ้วน';
-  document.getElementById('modal-body').innerHTML=schema.map(f=>{
-    const v=row?.[f.k]??'';
-    if(f.t==='textarea')return `<div class="field"><label>${f.l}${f.req?' *':''}</label><textarea data-k="${f.k}">${esc(v)}</textarea></div>`;
-    if(f.t==='select')return `<div class="field"><label>${f.l}</label><select data-k="${f.k}">${f.opts.map(o=>`<option value="${o[0]}" ${v===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div>`;
-    return `<div class="field"><label>${f.l}${f.req?' *':''}</label><input type="${f.t}" data-k="${f.k}" value="${esc(v)}"></div>`;
-  }).join('');
-  document.getElementById('modal-bg').classList.add('show');
+// ─── DATA ───
+function loadData() {
+  const raw = localStorage.getItem(KEY);
+  const d = raw ? JSON.parse(raw) : {};
+  const p = localStorage.getItem(POOL_KEY);
+  const pd = p ? JSON.parse(p) : {};
+
+  function set(id, val) { const el = document.getElementById(id); if (el && val != null) el.value = val; }
+
+  // Hero
+  set('f-hero-title', d.hero?.title || pd.content?.heroTitle?.replace(/<[^>]+>/g,'') || '');
+  set('f-hero-subtitle', d.hero?.subtitle || '');
+  set('f-hero-desc', d.hero?.desc || '');
+  set('f-hero-btn', d.hero?.btn || '');
+  set('f-stat1-num', d.hero?.c1n || pd.content?.stat1_num || '');
+  set('f-stat1-lbl', d.hero?.c1l || pd.content?.stat1_label || '');
+  set('f-stat2-num', d.hero?.c2n || pd.content?.stat2_num || '');
+  set('f-stat2-lbl', d.hero?.c2l || pd.content?.stat2_label || '');
+  set('f-stat3-num', d.hero?.c3n || pd.content?.stat3_num || '');
+  set('f-stat3-lbl', d.hero?.c3l || pd.content?.stat3_label || '');
+  set('f-hero-bg', pd.images?.heroBackground || '');
+  set('f-car1', pd.images?.carousel?.[0] || '');
+  set('f-car2', pd.images?.carousel?.[1] || '');
+  set('f-car3', pd.images?.carousel?.[2] || '');
+  // About
+  set('f-about-name', d.about?.name || '');
+  set('f-about-history', d.about?.history || '');
+  set('f-about-vision', d.about?.vision || '');
+  set('f-about-mission', d.about?.mission || '');
+  set('f-about-img', d.about?.img || pd.images?.aboutBanner || '');
+  set('f-about-addr', d.about?.addr || '');
+  set('f-about-tel', d.about?.tel || '');
+  set('f-about-email', d.about?.email || '');
+  // Contact
+  set('f-contact-addr', d.contact?.addr || '');
+  set('f-contact-tel', d.contact?.tel || '');
+  set('f-contact-email', d.contact?.email || '');
+  set('f-contact-line', d.contact?.line || '');
+  set('f-contact-fb', d.contact?.fb || '');
+  set('f-contact-map', d.contact?.map || '');
+  set('f-hours1', d.contact?.hours1 || '');
+  set('f-hours2', d.contact?.hours2 || '');
+  // Settings
+  set('f-site-title', d.settings?.title || '');
+  set('f-site-desc', d.settings?.desc || '');
+  set('f-site-keys', d.settings?.keys || '');
+  set('f-favicon', d.settings?.favicon || '');
+  set('f-fb', d.settings?.fb || '');
+  set('f-line', d.settings?.line || '');
+  set('f-ig', d.settings?.ig || '');
+  set('f-yt', d.settings?.yt || '');
+  // SEO
+  set('f-seo-title', d.seo?.title || '');
+  set('f-seo-desc', d.seo?.desc || '');
+  set('f-og-title', d.seo?.ogTitle || '');
+  set('f-og-desc', d.seo?.ogDesc || '');
+  set('f-og-img', d.seo?.ogImg || '');
+  set('f-canonical', d.seo?.canonical || '');
+  // Toggles
+  if (pd.template) {
+    document.getElementById('tog-analytics').checked = pd.template.showAnalytics !== false;
+    document.getElementById('tog-video').checked = pd.template.showVideo !== false;
+  }
+  // Layout
+  const curLayout = pd.template?.heroLayout || 'grid-carousel';
+  const curTheme = pd.template?.themeMode || 'cyber-dark';
+  selectLayout(curLayout, null, true);
+  selectTheme(curTheme, null, true);
 }
-function closeModal(){document.getElementById('modal-bg').classList.remove('show');}
-function saveModal(){
-  const {name,id}=_editing;const obj={};
-  document.querySelectorAll('#modal-body [data-k]').forEach(el=>obj[el.dataset.k]=el.value);
-  const schema=SCHEMAS[name];
-  for(const f of schema)if(f.req&&!obj[f.k]){alert('กรุณากรอก '+f.l);return;}
-  data[name]=data[name]||[];
-  if(id){const i=data[name].findIndex(x=>x.id===id);if(i>=0)data[name][i]={...data[name][i],...obj};}
-  else{obj.id=Date.now();data[name].push(obj);}
-  saveData();renderAll();closeModal();toast(id?'แก้ไขสำเร็จ':'เพิ่มสำเร็จ');
+
+function getData() {
+  function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+  return {
+    hero: { title:val('f-hero-title'), subtitle:val('f-hero-subtitle'), desc:val('f-hero-desc'), btn:val('f-hero-btn'),
+      c1n:val('f-stat1-num'), c1l:val('f-stat1-lbl'), c2n:val('f-stat2-num'), c2l:val('f-stat2-lbl'),
+      c3n:val('f-stat3-num'), c3l:val('f-stat3-lbl') },
+    about: { name:val('f-about-name'), history:val('f-about-history'), vision:val('f-about-vision'),
+      mission:val('f-about-mission'), img:val('f-about-img'), addr:val('f-about-addr'),
+      tel:val('f-about-tel'), email:val('f-about-email') },
+    contact: { addr:val('f-contact-addr'), tel:val('f-contact-tel'), email:val('f-contact-email'),
+      line:val('f-contact-line'), fb:val('f-contact-fb'), map:val('f-contact-map'),
+      hours1:val('f-hours1'), hours2:val('f-hours2') },
+    settings: { title:val('f-site-title'), desc:val('f-site-desc'), keys:val('f-site-keys'),
+      favicon:val('f-favicon'), fb:val('f-fb'), line:val('f-line'), ig:val('f-ig'), yt:val('f-yt') },
+    seo: { title:val('f-seo-title'), desc:val('f-seo-desc'), ogTitle:val('f-og-title'),
+      ogDesc:val('f-og-desc'), ogImg:val('f-og-img'), canonical:val('f-canonical') },
+    messages: getMessages()
+  };
 }
-function delItem(name,id){if(!confirm('ยืนยันการลบรายการนี้?'))return;data[name]=(data[name]||[]).filter(x=>x.id!==id);saveData();renderAll();toast('ลบแล้ว');}
-function viewMsg(id){const m=(data.messages||[]).find(x=>x.id===id);if(!m)return;
-  m.status='read';saveData();renderAll();
-  alert('จาก: '+m.name+' <'+m.email+'>\nเบอร์: '+(m.phone||'-')+'\nหัวข้อ: '+m.subject+'\nวันที่: '+m.date+'\n\n'+m.message);
-}
 
-/* =============== IMPORT / EXPORT =============== */
-function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nteq-data-'+Date.now()+'.json';a.click();toast('Export สำเร็จ');}
-function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{data=JSON.parse(ev.target.result);saveData();renderAll();toast('Import สำเร็จ');}catch{alert('ไฟล์ไม่ถูกต้อง');}};r.readAsText(f);}
-function resetAll(){if(!confirm('ล้างข้อมูลทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้!'))return;if(!confirm('ยืนยันอีกครั้ง: ลบข้อมูลทั้งหมดจริง?'))return;localStorage.removeItem(STORAGE_KEY);location.reload();}
-
-/* =============== TOAST =============== */
-function toast(m){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2500);}
-
-/* Sync from other tabs (index.html submitting forms) */
-window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){data=loadData();if(document.getElementById('app').style.display==='block')renderAll();}});
-/* ==========================================================================
-   INTEGRATED DYNAMIC CONTENT & TEMPLATE MANAGEMENT ENGINE
-   ========================================================================== */
-
-// ใช้คีย์หลักตัวเดียวกับระบบหลังบ้านเดิมเพื่อให้ข้อมูลเซฟรวมกันไม่กระจัดกระจาย
-const DYNAMIC_KEY = 'nteq_platform_data';
-
-// ฟังก์ชันดึงค่าปัจจุบันที่ Admin เคยตั้งไว้ มาใส่ในกล่อง Form ตอนเปิดหน้าเว็บ
-function loadCurrentConfigToForm() {
-    const localRaw = localStorage.getItem(DYNAMIC_KEY);
-    if (!localRaw) return;
-    
-    try {
-        const fullData = JSON.parse(localRaw);
-        // เช็คว่ามีออบเจกต์โครงสร้างเว็บอยู่ไหม ถ้าไม่มีให้ข้าม
-        if (!fullData.webConfig) return;
-        
-        const cfg = fullData.webConfig;
-        
-        // คืนค่าไปยังฟิลด์กรอกข้อมูลของ Admin
-        if(document.getElementById('cfg-layout') && cfg.template) document.getElementById('cfg-layout').value = cfg.template.heroLayout;
-        if(document.getElementById('cfg-video') && cfg.template) document.getElementById('cfg-video').value = cfg.template.showVideo.toString();
-        if(document.getElementById('cfg-analytics') && cfg.template) document.getElementById('cfg-analytics').value = cfg.template.showAnalytics.toString();
-        
-        if(document.getElementById('cfg-bg-url') && cfg.images) document.getElementById('cfg-bg-url').value = cfg.images.heroBackground || '';
-        if(document.getElementById('cfg-c1-url') && cfg.images?.carousel) document.getElementById('cfg-c1-url').value = cfg.images.carousel[0] || '';
-        if(document.getElementById('cfg-c2-url') && cfg.images?.carousel) document.getElementById('cfg-c2-url').value = cfg.images.carousel[1] || '';
-        
-        if(document.getElementById('cfg-hero-title') && cfg.content) document.getElementById('cfg-hero-title').value = cfg.content.heroTitle || '';
-        if(document.getElementById('cfg-hero-subtitle') && cfg.content) document.getElementById('cfg-hero-subtitle').value = cfg.content.heroSubtitle || '';
-    } catch(e) {
-        console.error("Error parsing configuration data:", e);
+function getPoolData() {
+  const cur = localStorage.getItem(POOL_KEY);
+  const d = cur ? JSON.parse(cur) : {};
+  return {
+    template: {
+      themeMode: d.template?.themeMode || 'cyber-dark',
+      heroLayout: d.template?.heroLayout || 'grid-carousel',
+      showVideo: document.getElementById('tog-video').checked,
+      showAnalytics: document.getElementById('tog-analytics').checked
+    },
+    images: {
+      heroBackground: document.getElementById('f-hero-bg').value || d.images?.heroBackground || '',
+      carousel: [
+        document.getElementById('f-car1').value || (d.images?.carousel?.[0] || ''),
+        document.getElementById('f-car2').value || (d.images?.carousel?.[1] || ''),
+        document.getElementById('f-car3').value || (d.images?.carousel?.[2] || '')
+      ],
+      aboutBanner: document.getElementById('f-about-img').value || d.images?.aboutBanner || ''
+    },
+    content: {
+      heroTitle: (document.getElementById('f-hero-title').value || '') + (document.getElementById('f-hero-subtitle').value ? ' — <span>' + document.getElementById('f-hero-subtitle').value + '</span>' : ''),
+      heroSubtitle: document.getElementById('f-hero-desc').value || '',
+      stat1_num: document.getElementById('f-stat1-num').value, stat1_label: document.getElementById('f-stat1-lbl').value,
+      stat2_num: document.getElementById('f-stat2-num').value, stat2_label: document.getElementById('f-stat2-lbl').value,
+      stat3_num: document.getElementById('f-stat3-num').value, stat3_label: document.getElementById('f-stat3-lbl').value
     }
+  };
 }
 
-// ฟังก์ชันเซฟค่าลงฐานข้อมูลร่วมกัน (ไม่ให้ทับข้อมูลกล่องข้อความ Inbox เดิมที่มีอยู่)
-function saveWebConfig(event) {
-    event.preventDefault();
-    
-    // โหลดข้อมูลเก่าทั้งหมดขึ้นมาก่อน (เผื่อมีคิวข้อความที่ลูกค้าส่งเข้ามา)
-    let fullData = {};
-    const localRaw = localStorage.getItem(DYNAMIC_KEY);
-    if (localRaw) {
-        try { fullData = JSON.parse(localRaw); } catch(e) { fullData = {}; }
-    }
-    
-    // ฝังโครงสร้างหน้าเว็บ (webConfig) เพิ่มเติมเข้าไปในออบเจกต์หลัก
-    fullData.webConfig = {
-        template: {
-            heroLayout: document.getElementById('cfg-layout').value,
-            showVideo: document.getElementById('cfg-video').value === 'true',
-            showAnalytics: document.getElementById('cfg-analytics').value === 'true'
-        },
-        images: {
-            heroBackground: document.getElementById('cfg-bg-url').value,
-            carousel: [
-                document.getElementById('cfg-c1-url').value,
-                document.getElementById('cfg-c2-url').value
-            ]
-        },
-        content: {
-            heroTitle: document.getElementById('cfg-hero-title').value,
-            heroSubtitle: document.getElementById('cfg-hero-subtitle').value
-        }
+function saveAll() {
+  const d = getData();
+  const p = getPoolData();
+  d.savedAt = new Date().toLocaleString('th-TH');
+  localStorage.setItem(KEY, JSON.stringify(d));
+  localStorage.setItem(POOL_KEY, JSON.stringify(p));
+  document.getElementById('stat-save').textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บจะอัปเดตทันที', 'success');
+}
+
+function resetAll() {
+  if (!confirm('ต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นหรือไม่?')) return;
+  localStorage.removeItem(KEY);
+  localStorage.removeItem(POOL_KEY);
+  toast('รีเซ็ตข้อมูลเรียบร้อย', 'info');
+  setTimeout(() => location.reload(), 800);
+}
+
+// ─── NAVIGATION ───
+function gotoPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {
+    'dashboard':'Dashboard','section-editor':'แก้ไขหน้าเว็บ','text-manager':'จัดการข้อความ',
+    'image-manager':'จัดการรูปภาพ','template-manager':'เปลี่ยน Template',
+    'page-manager':'จัดการหน้า','messages':'ข้อความ/ติดต่อ','settings':'ตั้งค่า','seo':'SEO & Meta'
+  };
+  document.getElementById('page-title').textContent = titles[id] || id;
+  if (id === 'messages') renderMessages();
+  if (id === 'image-manager') renderImages();
+  if (id === 'dashboard') updateDashboard();
+}
+
+function switchEditorTab(tab, el) {
+  document.querySelectorAll('.editor-tab').forEach(t => t.style.display = 'none');
+  const target = document.getElementById('etab-' + tab);
+  if (target) target.style.display = 'block';
+  document.querySelectorAll('.stab').forEach(s => s.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.stab').forEach(s => {
+      if (s.getAttribute('onclick') && s.getAttribute('onclick').includes("'" + tab + "'")) s.classList.add('active');
+    });
+  }
+}
+
+function previewSite() { window.open('index.html', '_blank'); }
+
+// ─── TEMPLATE ───
+let selectedTheme = 'cyber-dark';
+let selectedLayout = 'grid-carousel';
+
+function selectTheme(theme, el, silent) {
+  selectedTheme = theme;
+  document.querySelectorAll('[id^="tpl-"]').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('tpl-' + theme);
+  if (card) { card.classList.add('selected'); card.querySelector('.tpl-badge')?.remove(); const b=document.createElement('div'); b.className='tpl-badge'; b.textContent='ใช้อยู่'; card.querySelector('.tpl-preview').appendChild(b); }
+  const p = localStorage.getItem(POOL_KEY); const pd = p ? JSON.parse(p) : {};
+  pd.template = pd.template || {}; pd.template.themeMode = theme;
+  localStorage.setItem(POOL_KEY, JSON.stringify(pd));
+  if (!silent) toast('เปลี่ยน Theme เป็น ' + theme, 'success');
+}
+
+function selectLayout(layout, el, silent) {
+  selectedLayout = layout;
+  document.querySelectorAll('[id^="layout-"]').forEach(c => c.classList.remove('selected'));
+  const map = {'grid-carousel':'layout-grid','full-banner':'layout-banner','minimal':'layout-minimal'};
+  const card = document.getElementById(map[layout]);
+  if (card) card.classList.add('selected');
+  const p = localStorage.getItem(POOL_KEY); const pd = p ? JSON.parse(p) : {};
+  pd.template = pd.template || {}; pd.template.heroLayout = layout;
+  localStorage.setItem(POOL_KEY, JSON.stringify(pd));
+  if (!silent) toast('เปลี่ยน Layout เป็น ' + layout, 'success');
+}
+
+// ─── IMAGES ───
+function loadImages() {
+  const raw = localStorage.getItem(IMG_KEY);
+  images = raw ? JSON.parse(raw) : [
+    { id:1, url:'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=800&q=80', name:'Lab Research' },
+    { id:2, url:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80', name:'Industrial' },
+    { id:3, url:'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=800&q=80', name:'Factory' }
+  ];
+  renderImages();
+}
+
+function saveImages() {
+  localStorage.setItem(IMG_KEY, JSON.stringify(images));
+  document.getElementById('img-count').textContent = '(' + images.length + ' รูป)';
+  document.getElementById('stat-images').textContent = images.length;
+}
+
+function renderImages() {
+  const grid = document.getElementById('img-grid');
+  grid.innerHTML = '';
+  images.forEach((img, i) => {
+    const div = document.createElement('div');
+    div.className = 'img-item';
+    div.innerHTML = `<img src="${img.url}" alt="${img.name}" onerror="this.parentElement.style.background='#1a1a2e';this.style.display='none'">
+      <div class="img-label">${img.name || 'รูปที่ '+(i+1)}</div>
+      <div class="img-item-overlay">
+        <button onclick="openImgModal(${i})"><i class="fa-solid fa-eye"></i></button>
+        <button onclick="deleteImg(${i})" style="color:#e74c3c;"><i class="fa-solid fa-trash"></i></button>
+      </div>`;
+    grid.appendChild(div);
+  });
+  const add = document.createElement('div');
+  add.className = 'img-item img-add';
+  add.innerHTML = '<i class="fa-solid fa-plus"></i><span>เพิ่มรูป</span>';
+  add.onclick = () => document.getElementById('file-input').click();
+  grid.appendChild(add);
+  document.getElementById('img-count').textContent = '(' + images.length + ' รูป)';
+}
+
+function handleFileSelect(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      images.push({ id: Date.now() + Math.random(), url: e.target.result, name: file.name.replace(/\.[^.]+$/, '') });
+      saveImages();
+      renderImages();
+      toast('อัปโหลด "' + file.name + '" สำเร็จ!', 'success');
     };
-
-    // บันทึกกลับลงฐานข้อมูล LocalStorage
-    localStorage.setItem(DYNAMIC_KEY, JSON.stringify(fullData));
-    
-    // ใช้ระบบ Toast แจ้งเตือนเดิมของหน้าแอดมินที่มีอยู่แล้ว
-    if(typeof toast === 'function') {
-        toast('บันทึกเทมเพลตและอัปเดตรูปภาพเรียบร้อยแล้ว!');
-    } else {
-        alert('บันทึกข้อมูลเรียบร้อยแล้ว!');
-    }
+    reader.readAsDataURL(file);
+  });
 }
 
-// ตรวจสอบตัวดักจับ Event โหลดหน้าเพจ (หากของเก่ามี window.onload ให้ย้ายมาพ่วงที่นี่แทน)
-document.addEventListener('DOMContentLoaded', () => {
-    // โหลดข้อมูลฟอร์มดีไซน์
-    loadCurrentConfigToForm();
-    
-    // พ่วงเรียกฟังก์ชันดั้งเดิมของหน้า Admin (เช่น โหลดตารางข้อความ inbox ถ้ามี)
-    if(typeof renderAll === 'function') {
-        renderAll();
-    }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  handleFileSelect(e.dataTransfer.files);
+}
+
+function addImageByUrl() {
+  const url = document.getElementById('img-url-input').value.trim();
+  if (!url) return toast('กรุณาใส่ URL รูปภาพ', 'error');
+  const name = url.split('/').pop().split('?')[0] || 'image';
+  images.push({ id: Date.now(), url, name });
+  saveImages();
+  renderImages();
+  document.getElementById('img-url-input').value = '';
+  toast('เพิ่มรูปภาพสำเร็จ!', 'success');
+}
+
+function openImgModal(i) {
+  currentImgIndex = i;
+  const img = images[i];
+  document.getElementById('img-modal-img').src = img.url;
+  document.getElementById('img-modal-url').value = img.url;
+  document.getElementById('img-modal-title').textContent = img.name || 'รูปภาพ';
+  openModal('img-modal');
+}
+
+function deleteImg(i) {
+  if (!confirm('ต้องการลบรูปภาพนี้?')) return;
+  images.splice(i, 1);
+  saveImages();
+  renderImages();
+  toast('ลบรูปภาพเรียบร้อย', 'info');
+}
+
+function deleteCurrentImg() {
+  if (currentImgIndex === null) return;
+  deleteImg(currentImgIndex);
+  closeModal('img-modal');
+}
+
+function applyImageTo() {
+  const target = document.getElementById('img-use-for').value;
+  const url = document.getElementById('img-modal-url').value;
+  const map = { 'hero-bg':'f-hero-bg', 'carousel-1':'f-car1', 'carousel-2':'f-car2', 'carousel-3':'f-car3', 'about-img':'f-about-img' };
+  if (!target) return toast('กรุณาเลือกตำแหน่งที่จะใช้รูป', 'error');
+  const el = document.getElementById(map[target]);
+  if (el) { el.value = url; toast('กำหนดรูปภาพเรียบร้อย! อย่าลืมกด "บันทึกทั้งหมด"', 'success'); }
+  closeModal('img-modal');
+}
+
+// ─── MESSAGES ───
+function getMessages() {
+  const raw = localStorage.getItem(KEY);
+  const d = raw ? JSON.parse(raw) : {};
+  return d.messages || [];
+}
+
+function renderMessages() {
+  const msgs = getMessages();
+  const list = document.getElementById('msg-list');
+  const unread = msgs.filter(m => m.status === 'unread').length;
+  document.getElementById('stat-msgs').textContent = unread;
+  document.getElementById('badge-msg').textContent = unread;
+  if (!msgs.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-inbox" style="font-size:36px;margin-bottom:12px;display:block;opacity:.3;"></i>ยังไม่มีข้อความใหม่</div>';
+    return;
+  }
+  list.innerHTML = msgs.map((m, i) => `
+    <div class="msg-item ${m.status==='unread'?'unread':''}" onclick="openMsg(${i})">
+      <div class="msg-avatar">${(m.name||'?').charAt(0).toUpperCase()}</div>
+      <div class="msg-body">
+        <div class="msg-name">${m.name||'-'} <span style="font-size:11px;color:var(--muted);font-weight:400;">&lt;${m.email||''}&gt;</span></div>
+        <div class="msg-subject">${m.subject||'ไม่มีหัวข้อ'}</div>
+        <div class="msg-preview">${m.message||''}</div>
+      </div>
+      <div class="msg-meta">
+        <div class="msg-date">${m.date||''}</div>
+        ${m.status==='unread'?'<div class="msg-unread-dot"></div>':''}
+      </div>
+    </div>`).join('');
+}
+
+function openMsg(i) {
+  const msgs = getMessages();
+  const m = msgs[i];
+  if (!m) return;
+  currentMsgId = m.id;
+  m.status = 'read';
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  d.messages = msgs; localStorage.setItem(KEY, JSON.stringify(d));
+  document.getElementById('msg-modal-body').innerHTML = `
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;gap:10px;"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;">${(m.name||'?').charAt(0).toUpperCase()}</div><div><div style="font-size:16px;font-weight:700;">${m.name}</div><div style="font-size:13px;color:var(--muted);">${m.email}${m.phone?' • '+m.phone:''}</div></div></div>
+      <div style="background:rgba(46,204,113,0.06);border-radius:10px;padding:14px;"><div style="font-size:12px;color:var(--muted);margin-bottom:4px;">หัวข้อ</div><div style="font-size:14px;font-weight:600;">${m.subject||'-'}</div></div>
+      <div style="background:rgba(46,204,113,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:14px;line-height:1.7;white-space:pre-wrap;">${m.message||''}</div>
+      <div style="font-size:12px;color:var(--muted);">วันที่: ${m.date||'-'}</div>
+    </div>`;
+  openModal('msg-modal');
+  renderMessages();
+}
+
+function deleteCurMsg() {
+  if (!confirm('ต้องการลบข้อความนี้?')) return;
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  d.messages = (d.messages||[]).filter(m => m.id !== currentMsgId);
+  localStorage.setItem(KEY, JSON.stringify(d));
+  closeModal('msg-modal');
+  renderMessages();
+  toast('ลบข้อความเรียบร้อย', 'info');
+}
+
+// ─── DYNAMIC LISTS ───
+function createItemCard(data, type, index) {
+  const div = document.createElement('div');
+  div.style.cssText = 'background:rgba(46,204,113,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;';
+  if (type === 'product') {
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:12px;font-weight:700;color:var(--green);">ผลิตภัณฑ์ #${index+1}</span><button onclick="removeItem(this,'products')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></div>
+      <div class="form-row"><label>ชื่อผลิตภัณฑ์</label><input type="text" class="prod-name" value="${data.name||''}"></div>
+      <div class="form-row"><label>คำอธิบาย</label><textarea class="prod-desc">${data.desc||''}</textarea></div>
+      <div class="form-row"><label>URL รูปภาพ</label><input type="text" class="prod-img" value="${data.img||''}"></div>
+      <div class="form-row"><label>ราคา / หน่วย (ถ้ามี)</label><input type="text" class="prod-price" value="${data.price||''}"></div>`;
+  } else if (type === 'news') {
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:12px;font-weight:700;color:var(--green);">ข่าว #${index+1}</span><button onclick="removeItem(this,'news')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></div>
+      <div class="form-row"><label>หัวข้อข่าว</label><input type="text" class="news-title" value="${data.title||''}"></div>
+      <div class="form-row"><label>เนื้อหาข่าว</label><textarea class="news-body">${data.body||''}</textarea></div>
+      <div class="form-row"><label>URL รูปภาพ</label><input type="text" class="news-img" value="${data.img||''}"></div>
+      <div class="form-row"><label>วันที่</label><input type="date" class="news-date" value="${data.date||''}"></div>`;
+  } else if (type === 'csr') {
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:12px;font-weight:700;color:var(--green);">CSR #${index+1}</span><button onclick="removeItem(this,'csr')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></div>
+      <div class="form-row"><label>ชื่อกิจกรรม</label><input type="text" class="csr-title" value="${data.title||''}"></div>
+      <div class="form-row"><label>คำอธิบาย</label><textarea class="csr-desc">${data.desc||''}</textarea></div>
+      <div class="form-row"><label>URL รูปภาพ</label><input type="text" class="csr-img" value="${data.img||''}"></div>`;
+  } else if (type === 'job') {
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:12px;font-weight:700;color:var(--green);">ตำแหน่ง #${index+1}</span><button onclick="removeItem(this,'jobs')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></div>
+      <div class="form-row"><label>ตำแหน่งงาน</label><input type="text" class="job-title" value="${data.title||''}"></div>
+      <div class="form-row"><label>แผนก</label><input type="text" class="job-dept" value="${data.dept||''}"></div>
+      <div class="form-row"><label>คุณสมบัติ</label><textarea class="job-req">${data.req||''}</textarea></div>
+      <div class="form-row"><label>จำนวนรับ</label><input type="text" class="job-qty" value="${data.qty||'1'}"></div>`;
+  } else if (type === 'value') {
+    div.innerHTML = `<div style="display:flex;gap:10px;align-items:center;">
+      <input type="text" class="value-name" value="${data||''}" placeholder="ค่านิยม..." style="flex:1;background:rgba(46,204,113,0.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;">
+      <button onclick="removeItem(this,'values')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></div>`;
+  }
+  return div;
+}
+
+function removeItem(btn, type) {
+  if (!confirm('ต้องการลบรายการนี้?')) return;
+  btn.closest('[style*="border-radius:10px"]').remove();
+  toast('ลบรายการเรียบร้อย', 'info');
+}
+
+function initProductsList() {
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  const list = document.getElementById('products-list');
+  (d.products || []).forEach((p, i) => list.appendChild(createItemCard(p, 'product', i)));
+}
+function addProduct() {
+  const list = document.getElementById('products-list');
+  list.appendChild(createItemCard({}, 'product', list.children.length));
+}
+
+function initNewsList() {
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  const list = document.getElementById('news-list');
+  (d.news || []).forEach((n, i) => list.appendChild(createItemCard(n, 'news', i)));
+}
+function addNews() {
+  const list = document.getElementById('news-list');
+  list.appendChild(createItemCard({}, 'news', list.children.length));
+}
+
+function initCSRList() {
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  const list = document.getElementById('csr-list');
+  (d.csr || []).forEach((c, i) => list.appendChild(createItemCard(c, 'csr', i)));
+}
+function addCSR() {
+  const list = document.getElementById('csr-list');
+  list.appendChild(createItemCard({}, 'csr', list.children.length));
+}
+
+function initJobsList() {
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  const list = document.getElementById('jobs-list');
+  (d.jobs || []).forEach((j, i) => list.appendChild(createItemCard(j, 'job', i)));
+}
+function addJob() {
+  const list = document.getElementById('jobs-list');
+  list.appendChild(createItemCard({}, 'job', list.children.length));
+}
+
+function initValuesList() {
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  const list = document.getElementById('values-list');
+  (d.values || ['นวัตกรรม', 'ความยั่งยืน', 'คุณภาพ', 'ความซื่อสัตย์']).forEach((v, i) => list.appendChild(createItemCard(v, 'value', i)));
+}
+function addValue() {
+  const list = document.getElementById('values-list');
+  list.appendChild(createItemCard('', 'value', list.children.length));
+}
+
+// Collect dynamic lists on save
+const origGetData = getData;
+function getData() {
+  const d = origGetData();
+  // Products
+  d.products = Array.from(document.querySelectorAll('#products-list > div')).map(el => ({
+    name: el.querySelector('.prod-name')?.value || '',
+    desc: el.querySelector('.prod-desc')?.value || '',
+    img: el.querySelector('.prod-img')?.value || '',
+    price: el.querySelector('.prod-price')?.value || ''
+  }));
+  // News
+  d.news = Array.from(document.querySelectorAll('#news-list > div')).map(el => ({
+    title: el.querySelector('.news-title')?.value || '',
+    body: el.querySelector('.news-body')?.value || '',
+    img: el.querySelector('.news-img')?.value || '',
+    date: el.querySelector('.news-date')?.value || ''
+  }));
+  // CSR
+  d.csr = Array.from(document.querySelectorAll('#csr-list > div')).map(el => ({
+    title: el.querySelector('.csr-title')?.value || '',
+    desc: el.querySelector('.csr-desc')?.value || '',
+    img: el.querySelector('.csr-img')?.value || ''
+  }));
+  // Jobs
+  d.jobs = Array.from(document.querySelectorAll('#jobs-list > div')).map(el => ({
+    title: el.querySelector('.job-title')?.value || '',
+    dept: el.querySelector('.job-dept')?.value || '',
+    req: el.querySelector('.job-req')?.value || '',
+    qty: el.querySelector('.job-qty')?.value || '1'
+  }));
+  // Values
+  d.values = Array.from(document.querySelectorAll('#values-list .value-name')).map(el => el.value);
+  return d;
+}
+
+// ─── TEXT BLOCKS ───
+const TEXT_BLOCKS_DEF = [
+  { id:'nav-home', label:'เมนู: หน้าแรก' },
+  { id:'nav-company', label:'เมนู: บริษัทของเรา' },
+  { id:'nav-product', label:'เมนู: ผลิตภัณฑ์' },
+  { id:'nav-policy', label:'เมนู: นโยบาย' },
+  { id:'nav-media', label:'เมนู: ข่าวสาร' },
+  { id:'nav-jobs', label:'เมนู: ร่วมงานกับเรา' },
+  { id:'nav-contact', label:'เมนู: ติดต่อเรา' },
+  { id:'hero-title-main', label:'Hero: ชื่อหัวข้อหลัก' },
+  { id:'hero-sub-main', label:'Hero: คำอธิบาย' },
+];
+
+function initTextBlocks() {
+  const container = document.getElementById('text-blocks-list');
+  const raw = localStorage.getItem(KEY); const d = raw ? JSON.parse(raw) : {};
+  container.innerHTML = '';
+  TEXT_BLOCKS_DEF.forEach(def => {
+    const div = document.createElement('div');
+    div.className = 'tb-item';
+    div.innerHTML = `<div class="tb-header"><span class="tb-label"><i class="fa-solid fa-tag" style="margin-right:6px;"></i>${def.label}</span><span style="font-size:10px;color:var(--muted);">id: ${def.id}</span></div>
+      <textarea id="tb-${def.id}" rows="2">${d.textBlocks?.[def.id] || ''}</textarea>`;
+    container.appendChild(div);
+  });
+}
+
+// Save text blocks
+const origSaveAll = saveAll;
+function saveAll() {
+  // collect text blocks
+  const raw = localStorage.getItem(KEY); const d2 = raw ? JSON.parse(raw) : {};
+  d2.textBlocks = d2.textBlocks || {};
+  TEXT_BLOCKS_DEF.forEach(def => {
+    const el = document.getElementById('tb-' + def.id);
+    if (el) d2.textBlocks[def.id] = el.value;
+  });
+  const d = getData();
+  const p = getPoolData();
+  d.savedAt = new Date().toLocaleString('th-TH');
+  d.textBlocks = d2.textBlocks;
+  d.messages = getMessages();
+  localStorage.setItem(KEY, JSON.stringify(d));
+  localStorage.setItem(POOL_KEY, JSON.stringify(p));
+  document.getElementById('stat-save').textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บจะอัปเดตทันที', 'success');
+}
+
+// ─── MODAL ───
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(b => {
+  b.addEventListener('click', e => { if (e.target === b) b.classList.remove('open'); });
+});
+
+// ─── TOAST ───
+function toast(msg, type = 'success') {
+  const icons = { success:'fa-check-circle', error:'fa-circle-exclamation', info:'fa-circle-info' };
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}"></i> ${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.style.opacity = '0', 2500);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── DASHBOARD ───
+function updateDashboard() {
+  const imgs = JSON.parse(localStorage.getItem(IMG_KEY) || '[]');
+  document.getElementById('stat-images').textContent = imgs.length;
+  const msgs = getMessages();
+  const unread = msgs.filter(m => m.status === 'unread').length;
+  document.getElementById('stat-msgs').textContent = unread;
+  document.getElementById('badge-msg').textContent = unread;
+  const d = JSON.parse(localStorage.getItem(KEY) || '{}');
+  if (d.savedAt) document.getElementById('stat-save').textContent = d.savedAt.split(' ')[1] || '-';
+}
+
+// keyboard shortcut Ctrl+S
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveAll(); }
 });
 </script>
 </body>
