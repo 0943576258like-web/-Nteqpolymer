@@ -2844,6 +2844,19 @@
             checkCookies();
             initWelcomePopup();
         });
+        function refreshContent() {
+  const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+  if (data.textBlocks) {
+    // สมมติว่ามี Element ที่แสดงผลชื่อ tb-title
+    const titleEl = document.getElementById('tb-title');
+    if (titleEl) titleEl.textContent = data.textBlocks.title;
+    
+    // ทำแบบนี้กับทุกส่วนที่คุณต้องการอัปเดต
+  }
+}
+
+// เรียกฟังก์ชันนี้หลังโหลดหน้าเว็บ และเมื่อตรวจพบการเปลี่ยนแปลง
+window.addEventListener('storage', refreshContent);
 	    </script>
 
     <!-- VIDEO MODAL -->
