@@ -914,23 +914,13 @@ function getPoolData() {
 }
 
 function saveAll() {
-    try {
-        // ลองใส่ console.log เพื่อเช็กว่าปุ่มทำงานถึงฟังก์ชันนี้ไหม
-        console.log("เริ่มบันทึกข้อมูล...");
-
-        // โค้ดดึงข้อมูลของคุณ...
-        const data = {
-            companyName: document.getElementById('input-company-name').value,
-            // ... ข้อมูลอื่นๆ
-        };
-        
-        localStorage.setItem('YOUR_KEY', JSON.stringify(data));
-        toast('บันทึกสำเร็จแล้ว!', 'success');
-        
-    } catch (error) {
-        console.error("เกิดข้อผิดพลาดขณะบันทึก:", error);
-        toast('บันทึกไม่สำเร็จ', 'error');
-    }
+  const d = getData();
+  const p = getPoolData();
+  d.savedAt = new Date().toLocaleString('th-TH');
+  localStorage.setItem(KEY, JSON.stringify(d));
+  localStorage.setItem(POOL_KEY, JSON.stringify(p));
+  document.getElementById('stat-save').textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บจะอัปเดตทันที', 'success');
 }
 
 function resetAll() {
@@ -1316,25 +1306,43 @@ function initTextBlocks() {
   });
 }
 
-// Save text blocks
-const origSaveAll = saveAll;
 function saveAll() {
-  // collect text blocks
-  const raw = localStorage.getItem(KEY); const d2 = raw ? JSON.parse(raw) : {};
-  d2.textBlocks = d2.textBlocks || {};
-  TEXT_BLOCKS_DEF.forEach(def => {
-    const el = document.getElementById('tb-' + def.id);
-    if (el) d2.textBlocks[def.id] = el.value;
-  });
-  const d = getData();
-  const p = getPoolData();
-  d.savedAt = new Date().toLocaleString('th-TH');
-  d.textBlocks = d2.textBlocks;
-  d.messages = getMessages();
-  localStorage.setItem(KEY, JSON.stringify(d));
-  localStorage.setItem(POOL_KEY, JSON.stringify(p));
-  document.getElementById('stat-save').textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บจะอัปเดตทันที', 'success');
+  try {
+    console.log("เริ่มบันทึก..."); // เช็กใน F12 ว่ามันเริ่มทำงานไหม
+    
+    // 1. ดึงข้อมูลปัจจุบัน
+    const raw = localStorage.getItem(KEY); 
+    const d = raw ? JSON.parse(raw) : {};
+    
+    // 2. ตรวจสอบว่า TEXT_BLOCKS_DEF มีอยู่จริง
+    if (typeof TEXT_BLOCKS_DEF !== 'undefined') {
+        d.textBlocks = d.textBlocks || {};
+        TEXT_BLOCKS_DEF.forEach(def => {
+            const el = document.getElementById('tb-' + def.id);
+            if (el) {
+                d.textBlocks[def.id] = el.value;
+            } else {
+                console.warn("หา ID ไม่พบ: tb-" + def.id);
+            }
+        });
+    }
+
+    // 3. บันทึกข้อมูล
+    d.savedAt = new Date().toLocaleString('th-TH');
+    localStorage.setItem(KEY, JSON.stringify(d));
+    
+    // 4. อัปเดต UI
+    const statSave = document.getElementById('stat-save');
+    if (statSave) {
+        statSave.textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    }
+    
+    toast('บันทึกข้อมูลสำเร็จ!', 'success');
+
+  } catch (err) {
+    console.error("บันทึกผิดพลาด:", err);
+    toast('เกิดข้อผิดพลาด: ' + err.message, 'error');
+  }
 }
 
 // ─── MODAL ───
