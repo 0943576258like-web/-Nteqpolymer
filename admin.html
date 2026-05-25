@@ -756,7 +756,7 @@ function changePassword() {
   const op = document.getElementById('f-old-pass').value;
   const np = document.getElementById('f-new-pass').value;
   const cp = document.getElementById('f-conf-pass').value;
-  const saved = localStorage.getItem(PASS_KEY) || 'admin1123';
+  const saved = localStorage.getItem(PASS_KEY) || 'admin123';
   if (op !== saved) return toast('รหัสผ่านปัจจุบันไม่ถูกต้อง', 'error');
   if (np !== cp) return toast('รหัสผ่านใหม่ไม่ตรงกัน', 'error');
   if (np.length < 6) return toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
@@ -914,13 +914,23 @@ function getPoolData() {
 }
 
 function saveAll() {
-  const d = getData();
-  const p = getPoolData();
-  d.savedAt = new Date().toLocaleString('th-TH');
-  localStorage.setItem(KEY, JSON.stringify(d));
-  localStorage.setItem(POOL_KEY, JSON.stringify(p));
-  document.getElementById('stat-save').textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บจะอัปเดตทันที', 'success');
+    try {
+        // ลองใส่ console.log เพื่อเช็กว่าปุ่มทำงานถึงฟังก์ชันนี้ไหม
+        console.log("เริ่มบันทึกข้อมูล...");
+
+        // โค้ดดึงข้อมูลของคุณ...
+        const data = {
+            companyName: document.getElementById('input-company-name').value,
+            // ... ข้อมูลอื่นๆ
+        };
+        
+        localStorage.setItem('YOUR_KEY', JSON.stringify(data));
+        toast('บันทึกสำเร็จแล้ว!', 'success');
+        
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดขณะบันทึก:", error);
+        toast('บันทึกไม่สำเร็จ', 'error');
+    }
 }
 
 function resetAll() {
