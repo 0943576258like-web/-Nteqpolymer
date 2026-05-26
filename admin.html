@@ -972,7 +972,7 @@ function switchEditorTab(tab, el) {
   }
 }
 
-function previewSite() { window.open('/site.html', '_blank'); }
+function previewSite() { window.open('/index.html', '_blank'); }
 
 // ─── TEMPLATE ───
 let selectedTheme = 'cyber-dark';
@@ -1348,7 +1348,7 @@ function saveAll() {
         statSave.textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
     }
     
-    // 5. สะพานเชื่อม → เขียน nteq_platform_data ให้ site.html อ่านได้ทันที
+    // 5. สะพานเชื่อม → เขียน nteq_platform_data ให้ index.html อ่านได้ทันที
     try { syncToSite(); } catch(e) { console.warn('sync site error', e); }
 
     toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บอัปเดตทันที', 'success');
@@ -1359,7 +1359,7 @@ function saveAll() {
   }
 }
 
-// ─── BRIDGE: ส่งข้อมูลให้ site.html (schema: nteq_platform_data) ───
+// ─── BRIDGE: ส่งข้อมูลให้ index.html (schema: nteq_platform_data) ───
 function syncToSite() {
   const d = (typeof getData === 'function') ? getData() : {};
   const pool = (typeof getPoolData === 'function') ? getPoolData() : {};
