@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="file:///C:/Users/natthawut/Pictures/01.png"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 
     <style>
@@ -1040,6 +1040,111 @@
         @media (max-width: 480px) {
             .org-grid-ops { grid-template-columns: 1fr; }
         }
+        /* Awards Slider */
+        .awards-slider-wrap {
+            position: relative;
+            margin-top: 30px;
+            padding: 30px 20px 50px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border-glass);
+            border-radius: 20px;
+            backdrop-filter: blur(var(--blur-radius));
+            -webkit-backdrop-filter: blur(var(--blur-radius));
+            overflow: hidden;
+        }
+        .awards-slider-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+            will-change: transform;
+        }
+        .award-slide {
+            flex: 0 0 calc((100% - 40px) / 3);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--color-border-glass);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .award-slide:hover {
+            transform: translateY(-6px);
+            border-color: var(--color-accent-green);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 25px var(--color-accent-glow);
+        }
+        .award-slide img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+        .award-caption {
+            padding: 18px 20px 22px;
+        }
+        .award-caption h4 {
+            color: var(--color-accent-green);
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .award-caption p {
+            color: var(--color-text-muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .awards-nav {
+            position: absolute;
+            top: 45%;
+            transform: translateY(-50%);
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 1px solid var(--color-accent-green);
+            background: rgba(5, 14, 9, 0.85);
+            color: var(--color-accent-green);
+            cursor: pointer;
+            z-index: 5;
+            transition: all 0.3s ease;
+            display: grid;
+            place-items: center;
+        }
+        .awards-nav:hover {
+            background: var(--color-accent-green);
+            color: #021;
+            box-shadow: 0 0 20px var(--color-accent-glow);
+        }
+        .awards-nav.prev { left: 10px; }
+        .awards-nav.next { right: 10px; }
+        .awards-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .awards-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(46, 204, 113, 0.25);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .awards-dot.active {
+            background: var(--color-accent-green);
+            width: 28px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--color-accent-glow);
+        }
+        @media (max-width: 1100px) {
+            .award-slide { flex: 0 0 calc((100% - 20px) / 2); }
+            .award-slide img { height: 210px; }
+        }
+        @media (max-width: 768px) {
+            .award-slide { flex: 0 0 100%; }
+            .award-slide img { height: 220px; }
+            .awards-nav { width: 40px; height: 40px; }
+        }
     </style>
 </head>
 <body>
@@ -1232,6 +1337,19 @@
                 </div>
             </div>
 
+            <div class="company-intro-wrapper" style="width: 100%; display: flex; justify-content: center; margin-bottom: 60px;">
+                <div class="company-intro-card" style="background: var(--color-bg-card); border: 1px solid var(--color-border-glass); border-radius: 24px; padding: 40px; backdrop-filter: blur(var(--blur-radius)); -webkit-backdrop-filter: blur(var(--blur-radius)); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); width: 100%; max-width: 900px; text-align: center;">
+                    <h2 id="intro-title" style="font-size:32px; font-weight:700; margin-bottom:20px; color: #fff; letter-spacing:0.5px;">บริษัท เอ็นเทค โพลิเมอร์ จำกัด</h2>
+                    <h3 id="intro-subtitle" style="font-size:24px; font-weight:600; margin-bottom:25px; color: var(--color-accent-green);">"ผลิตภัณฑ์ยางคุณภาพที่เป็นมิตรกับสิ่งแวดล้อมอย่างยั่งยืน"</h3>
+                    <p id="intro-p1" style="font-size:16px; line-height:1.8; color: var(--color-text-muted); margin-bottom:20px;">
+                        บริษัท เอ็นเทค โพลิเมอร์ จำกัด เป็นกิจการร่วมลงทุนกับทางยุโรป โดยได้รับการส่งเสริมจากสำนักงานคณะกรรมการส่งเสริมการลงทุน ซึ่งเป็นบริษัทดำเนินการส่งออกและแปรรูปยางธรรมชาติ ก่อตั้งมาตั้งแต่พ.ศ. 2553 ด้วยหุ้นส่วนเชิงกลยุทธ์ที่แข็งแกร่งของผู้ผลิตยางรถยนต์ระดับโลกและผู้แปรรูปยางธรรมชาติที่มีประสบการณ์ ทำให้เกิดการแบ่งปันวิสัยทัศน์ร่วมกันเพื่อนำไปสู่ความแตกต่างและการแลกเปลี่ยนความรู้และประสบการณ์ผ่านการผนึกกำลังร่วมกันในอุตสาหกรรมยางธรรมชาติ
+                    </p>
+                    <p id="intro-p2" style="font-size:16px; line-height:1.8; color: var(--color-text-muted); margin-bottom:0;">
+                        เป้าหมายของเราคือการสร้างวัสดุนวัตกรรมผ่านการพัฒนาปรับปรุงคุณภาพของผลิตภัณฑ์เพื่อสร้างความพึงพอใจเหนือความคาดหมายของลูกค้า ความยั่งยืนเป็นหัวใจหลักของเอ็นเทค ซึ่งเราพยายามที่จะเป็นโรงงานที่ถูกสุขลักษณะและเป็นมิตรกับสิ่งแวดล้อมมากที่สุด ซึ่งช่วยพัฒนาปรับปรุงมาตรฐานความเป็นอยู่ของคนและชุมชน
+                    </p>
+                </div>
+            </div>
+
             <div class="intro-video-wrapper">
                 <div class="video-box-card">
                     <h2 style="font-size:20px; font-weight:700; margin-bottom:18px; letter-spacing:-0.5px;" id="video-section-title">
@@ -1260,10 +1378,10 @@
 
             <h2 style="font-size:24px; font-weight:700; margin-bottom:30px; letter-spacing:-0.5px;" id="sch-title">เจาะลึกศักยภาพและความสามารถของเรา</h2>
             <div class="premium-grid">
-                <div class="premium-card"><div class="premium-card-body"><i class="fa-solid fa-leaf"></i><h3 id="ct-1">นวัตกรรมที่เป็นมิตรต่อสิ่งแวดล้อม</h3><p id="cd-1">เทคโนโลยียางพาราสีเขียวที่ยั่งยืน ออกแบบมาเพื่อลดการปล่อยคาร์บอนฟุตพริ้นท์ทั่วโลก</p></div></div>
-                <div class="premium-card"><div class="premium-card-body"><i class="fa-solid fa-recycle"></i><h3 id="ct-2">เศรษฐกิจหมุนเวียน</h3><p id="cd-2">การดำเนินงานตามวงจรชีวิตวัสดุอย่างครบวงจร มุ่งสู่โมเดลอุตสาหกรรมที่ปราศจากขยะเหลือทิ้ง</p></div></div>
-                <div class="premium-card"><div class="premium-card-body"><i class="fa-solid fa-atom"></i><h3 id="ct-3">เทคโนโลยีวัสดุขั้นสูง</h3><p id="cd-3">วิศวกรรมการออกแบบสูตรอัจฉริยะ มุ่งเป้าสำหรับอุตสาหกรรมการผลิตที่ต้องการความแม่นยำสูง</p></div></div>
-                <div class="premium-card"><div class="premium-card-body"><i class="fa-solid fa-network-wired"></i><h3 id="ct-4">เครือข่ายซัพพลายเชนระดับโลก</h3><p id="cd-4">ยกระดับมาตรฐานการผลิตของไทยเข้าสู่ภาคการค้าระดับพรีเมียมทั่วโลกโดยตรง</p></div></div>
+                <div class="premium-card"><div class="premium-card-img"><img src="images/capabilities/eco_innovation.jpg" alt="Eco Innovation"></div><div class="premium-card-body"><i class="fa-solid fa-leaf"></i><h3 id="ct-1">นวัตกรรมที่เป็นมิตรต่อสิ่งแวดล้อม</h3><p id="cd-1">เทคโนโลยียางพาราสีเขียวที่ยั่งยืน ออกแบบมาเพื่อลดการปล่อยคาร์บอนฟุตพริ้นท์ทั่วโลก</p></div></div>
+                <div class="premium-card"><div class="premium-card-img"><img src="images/capabilities/circular_economy.png" alt="Circular Economy"></div><div class="premium-card-body"><i class="fa-solid fa-recycle"></i><h3 id="ct-2">เศรษฐกิจหมุนเวียน</h3><p id="cd-2">การดำเนินงานตามวงจรชีวิตวัสดุอย่างครบวงจร มุ่งสู่โมเดลอุตสาหกรรมที่ปราศจากขยะเหลือทิ้ง</p></div></div>
+                <div class="premium-card"><div class="premium-card-img"><img src="images/capabilities/advanced_tech.jpg" alt="Advanced Technology"></div><div class="premium-card-body"><i class="fa-solid fa-atom"></i><h3 id="ct-3">เทคโนโลยีวัสดุขั้นสูง</h3><p id="cd-3">วิศวกรรมการออกแบบสูตรอัจฉริยะ มุ่งเป้าสำหรับอุตสาหกรรมการผลิตที่ต้องการความแม่นยำสูง</p></div></div>
+                <div class="premium-card"><div class="premium-card-img"><img src="images/capabilities/global_supply_chain.webp" alt="Global Supply Chain"></div><div class="premium-card-body"><i class="fa-solid fa-network-wired"></i><h3 id="ct-4">เครือข่ายซัพพลายเชนระดับโลก</h3><p id="cd-4">ยกระดับมาตรฐานการผลิตของไทยเข้าสู่ภาคการค้าระดับพรีเมียมทั่วโลกโดยตรง</p></div></div>
             </div>
         </section>
 
@@ -1479,7 +1597,51 @@
                 <div class="page-hero-overlay"><p>Certifications</p><h2 id="pt-awards">รางวัลและการรับรอง</h2></div>
             </div>
             <div class="modern-glass-card"><p>มาตรฐานการจัดการสิ่งแวดล้อม ISO และระบบควบคุมคุณภาพวัตถุดิบเชิงอุตสาหกรรมขั้นสูง มุ่งเน้นความโปร่งใสในทุกขั้นตอนการตรวจสอบ</p></div>
+
+            <!-- Awards & Certifications Slider -->
+            <div class="awards-slider-wrap">
+                <div class="awards-slider-track" id="awardsTrack">
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1607435097405-db48f377bff6?q=80&w=1200" alt="ISO 9001"><div class="award-caption"><h4>ISO 9001:2015</h4><p>Quality Management System</p></div></div>
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1581091012184-7c1f3a3d2f8a?q=80&w=1200" alt="ISO 14001"><div class="award-caption"><h4>ISO 14001:2015</h4><p>Environmental Management</p></div></div>
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?q=80&w=1200" alt="FSC"><div class="award-caption"><h4>FSC Certified</h4><p>Sustainable Sourcing</p></div></div>
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200" alt="GMP"><div class="award-caption"><h4>GMP Standard</h4><p>Good Manufacturing Practice</p></div></div>
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1200" alt="Green Industry"><div class="award-caption"><h4>Green Industry Level 4</h4><p>Ministry of Industry</p></div></div>
+                    <div class="award-slide"><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200" alt="Innovation Award"><div class="award-caption"><h4>Innovation Award 2024</h4><p>Premium Green Polymer</p></div></div>
+                </div>
+                <button class="awards-nav prev" onclick="moveAwards(-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="awards-nav next" onclick="moveAwards(1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="awards-dots" id="awardsDots"></div>
+            </div>
         </section>
+
+        <script>
+            (function(){
+                const track = document.getElementById('awardsTrack');
+                if(!track) return;
+                const slides = track.querySelectorAll('.award-slide');
+                const dotsWrap = document.getElementById('awardsDots');
+                let idx = 0;
+                let perView = window.innerWidth < 768 ? 1 : (window.innerWidth < 1100 ? 2 : 3);
+                const pages = Math.max(1, slides.length - perView + 1);
+                for(let i=0;i<pages;i++){
+                    const d = document.createElement('button');
+                    d.className = 'awards-dot' + (i===0?' active':'');
+                    d.onclick = () => { idx = i; update(); };
+                    dotsWrap.appendChild(d);
+                }
+                function update(){
+                    const slideW = slides[0].getBoundingClientRect().width + 20;
+                    track.style.transform = `translateX(-${idx * slideW}px)`;
+                    dotsWrap.querySelectorAll('.awards-dot').forEach((d,i)=>d.classList.toggle('active', i===idx));
+                }
+                window.moveAwards = function(dir){
+                    idx = (idx + dir + pages) % pages;
+                    update();
+                };
+                setInterval(()=>window.moveAwards(1), 5000);
+                window.addEventListener('resize', ()=>{ update(); });
+            })();
+        </script>
 
         <section id="products-page" class="content-section">
             <div class="page-hero-banner">
@@ -2449,6 +2611,10 @@
         let currentLang = 'TH';
         const langData = {
             TH: {
+                'intro-title': 'บริษัท เอ็นเทค โพลิเมอร์ จำกัด',
+                'intro-subtitle': '"ผลิตภัณฑ์ยางคุณภาพที่เป็นมิตรกับสิ่งแวดล้อมอย่างยั่งยืน"',
+                'intro-p1': 'บริษัท เอ็นเทค โพลิเมอร์ จำกัด เป็นกิจการร่วมลงทุนกับทางยุโรป โดยได้รับการส่งเสริมจากสำนักงานคณะกรรมการส่งเสริมการลงทุน ซึ่งเป็นบริษัทดำเนินการส่งออกและแปรรูปยางธรรมชาติ ก่อตั้งมาตั้งแต่พ.ศ. 2553 ด้วยหุ้นส่วนเชิงกลยุทธ์ที่แข็งแกร่งของผู้ผลิตยางรถยนต์ระดับโลกและผู้แปรรูปยางธรรมชาติที่มีประสบการณ์ ทำให้เกิดการแบ่งปันวิสัยทัศน์ร่วมกันเพื่อนำไปสู่ความแตกต่างและการแลกเปลี่ยนความรู้และประสบการณ์ผ่านการผนึกกำลังร่วมกันในอุตสาหกรรมยางธรรมชาติ',
+                'intro-p2': 'เป้าหมายของเราคือการสร้างวัสดุนวัตกรรมผ่านการพัฒนาปรับปรุงคุณภาพของผลิตภัณฑ์เพื่อสร้างความพึงพอใจเหนือความคาดหมายของลูกค้า ความยั่งยืนเป็นหัวใจหลักของเอ็นเทค ซึ่งเราพยายามที่จะเป็นโรงงานที่ถูกสุขลักษณะและเป็นมิตรกับสิ่งแวดล้อมมากที่สุด ซึ่งช่วยพัฒนาปรับปรุงมาตรฐานความเป็นอยู่ของคนและชุมชน',
                 'nav-home': 'หน้าแรก', 'nav-company': 'บริษัทของเรา', 'nav-sub-about': 'ข้อมูลบริษัท',
                 'nav-sub-vision': 'วิสัยทัศน์และพันธกิจ', 'nav-sub-struct': 'แผนผังองค์กร', 'nav-sub-exec': 'คณะกรรมการบริหาร',
                 'nav-sub-awards': 'รางวัลและการรับรอง', 'nav-product': 'ผลิตภัณฑ์ของเรา', 'nav-policy': 'นโยบาย',
@@ -2504,6 +2670,10 @@
                 'pk-t-3': '1.26 / 1.33 Tons Eco-Metal Bases', 'pk-d-3': 'ระบบพาเลทเหล็กหมุนเวียน (Reusable Metal Pallet) ออกแบบมาเพื่อลดขยะจากเศษไม้ สนับสนุนห่วงโซ่อุปทานแบบปิดและนโยบาย Zero Waste ของคู่ค้าระดับโลก'
             },
             EN: {
+                'intro-title': 'NTEQ POLYMER Co., Ltd.',
+                'intro-subtitle': '"Sustainable Eco-Friendly Quality Rubber Products"',
+                'intro-p1': 'NTEQ POLYMER Co., Ltd. is a joint venture with European partners, supported by the Board of Investment (BOI). Established in 2010, the company specializes in the export and processing of natural rubber. With strong strategic partnerships from world-class tire manufacturers and experienced natural rubber processors, we share a unified vision to lead through innovation and the exchange of knowledge within the natural rubber industry.',
+                'intro-p2': 'Our goal is to create innovative materials by continuously improving product quality to exceed customer expectations. Sustainability is at the core of NTEQ. We strive to operate the most hygienic and environmentally friendly factories, contributing to the enhancement of living standards for our people and the community.',
                 'nav-home': 'Home', 'nav-company': 'Our Company', 'nav-sub-about': 'Company Profile',
                 'nav-sub-vision': 'Vision & Mission', 'nav-sub-struct': 'Organization Structure', 'nav-sub-exec': 'Executive Committee',
                 'nav-sub-awards': 'Awards & Certifications', 'nav-product': 'Products', 'nav-policy': 'Policy',
@@ -2844,18 +3014,19 @@
             checkCookies();
             initWelcomePopup();
         });
-        // เพิ่ม Event Listener เพื่อตรวจจับการเปลี่ยนแปลงของ localStorage
-window.addEventListener('storage', (event) => {
-  // ตรวจสอบว่า KEY ตรงกับที่ใช้บันทึกใน admin.html หรือไม่
-  if (event.key === 'KEY_ของคุณ') { // เปลี่ยน 'KEY_ของคุณ' เป็นชื่อ KEY ที่คุณใช้
-    console.log("มีการแก้ไขข้อมูลจาก Admin, กำลังโหลดข้อมูลใหม่...");
-    
-    // สั่งให้หน้าเว็บโหลดข้อมูลจาก localStorage ใหม่
-    // สมมติว่าคุณมีฟังก์ชันสำหรับโหลดข้อมูลชื่อ loadData()
-    // ถ้าไม่มี คุณสามารถใช้ location.reload() เพื่อรีเฟรชหน้าเว็บอัตโนมัติได้ครับ
-    location.reload(); 
-  }
-});
+        // ฟัง localStorage เปลี่ยนจาก admin → รีโหลดเนื้อหาแบบ live
+        const ADMIN_KEYS = ['nteq_platform_data','nteq_admin_data_v1','nteq_dynamic_pool_v1','nteq_images_v1'];
+        window.addEventListener('storage', (event) => {
+          if (ADMIN_KEYS.includes(event.key)) {
+            try { applyAdminRealtimeConfig(); } catch(e) { location.reload(); }
+          }
+        });
+        // โพลล์ทุก 2 วินาที เผื่อกรณีเปิดในแท็บเดียวกัน
+        let __lastAdminTick = localStorage.getItem('nteq_platform_data') || '';
+        setInterval(() => {
+          const cur = localStorage.getItem('nteq_platform_data') || '';
+          if (cur !== __lastAdminTick) { __lastAdminTick = cur; try { applyAdminRealtimeConfig(); } catch(e){} }
+        }, 2000);
 	    </script>
 
     <!-- VIDEO MODAL -->
