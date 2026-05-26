@@ -245,7 +245,11 @@ html,body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hid
       <input type="password" id="inp-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
     </div>
     <button class="btn-login" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+    <div style="text-align:center;margin-top:14px;">
+      <a href="#" onclick="event.preventDefault();resetAdminPassword()" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s;">ลืมรหัสผ่าน?</a>
+    </div>
     <div id="login-err"><i class="fa-solid fa-circle-exclamation"></i> ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+    <div id="login-reset-ok" style="color:var(--green);font-size:13px;margin-top:10px;display:none;"><i class="fa-solid fa-check-circle"></i> รีเซ็ตรหัสผ่านสำเร็จ — รหัสผ่านคือ <b>admin1123</b></div>
   </div>
 </div>
 
@@ -756,7 +760,7 @@ function changePassword() {
   const op = document.getElementById('f-old-pass').value;
   const np = document.getElementById('f-new-pass').value;
   const cp = document.getElementById('f-conf-pass').value;
-  const saved = localStorage.getItem(PASS_KEY) || 'admin123';
+  const saved = localStorage.getItem(PASS_KEY) || 'admin1123';
   if (op !== saved) return toast('รหัสผ่านปัจจุบันไม่ถูกต้อง', 'error');
   if (np !== cp) return toast('รหัสผ่านใหม่ไม่ตรงกัน', 'error');
   if (np.length < 6) return toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
@@ -765,6 +769,13 @@ function changePassword() {
   document.getElementById('f-old-pass').value = '';
   document.getElementById('f-new-pass').value = '';
   document.getElementById('f-conf-pass').value = '';
+}
+function resetAdminPassword() {
+  if (!confirm('รีเซ็ตรหัสผ่านแอดมินกลับเป็นค่าเริ่มต้น?\nรหัสผ่านจะกลับเป็น "admin1123"')) return;
+  localStorage.removeItem(PASS_KEY);
+  const ok = document.getElementById('login-reset-ok');
+  ok.style.display = 'block';
+  document.getElementById('login-err').style.display = 'none';
 }
 
 // ─── INIT ───
@@ -961,7 +972,7 @@ function switchEditorTab(tab, el) {
   }
 }
 
-function previewSite() { window.open('index.html', '_blank'); }
+function previewSite() { window.open('/site.html', '_blank'); }
 
 // ─── TEMPLATE ───
 let selectedTheme = 'cyber-dark';
@@ -1337,12 +1348,76 @@ function saveAll() {
         statSave.textContent = new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
     }
     
-    toast('บันทึกข้อมูลสำเร็จ!', 'success');
+    // 5. สะพานเชื่อม → เขียน nteq_platform_data ให้ site.html อ่านได้ทันที
+    try { syncToSite(); } catch(e) { console.warn('sync site error', e); }
+
+    toast('บันทึกข้อมูลสำเร็จ! หน้าเว็บอัปเดตทันที', 'success');
 
   } catch (err) {
     console.error("บันทึกผิดพลาด:", err);
     toast('เกิดข้อผิดพลาด: ' + err.message, 'error');
   }
+}
+
+// ─── BRIDGE: ส่งข้อมูลให้ site.html (schema: nteq_platform_data) ───
+function syncToSite() {
+  const d = (typeof getData === 'function') ? getData() : {};
+  const pool = (typeof getPoolData === 'function') ? getPoolData() : {};
+  const imgs = JSON.parse(localStorage.getItem(IMG_KEY) || '[]');
+
+  const sub = d.hero?.subtitle ? ` — <span>${d.hero.subtitle}</span>` : '';
+  const platform = {
+    webConfig: {
+      siteName: d.settings?.title || 'NTEQ POLYMER',
+      siteTagline: d.settings?.desc || '',
+      images: {
+        heroBackground: pool.images?.heroBackground || '',
+        carousel: pool.images?.carousel || [],
+        aboutBanner: pool.images?.aboutBanner || d.about?.img || '',
+        popupImg: d.settings?.popupImg || ''
+      },
+      content: {
+        heroTitle: (d.hero?.title || '') + sub,
+        heroSubtitle: d.hero?.desc || '',
+        btnText: d.hero?.btn || '',
+        stat1: { val: d.hero?.c1n || '', label: d.hero?.c1l || '' },
+        stat2: { val: d.hero?.c2n || '', label: d.hero?.c2l || '' },
+        stat3: { val: d.hero?.c3n || '', label: d.hero?.c3l || '' }
+      },
+      template: {
+        heroLayout: pool.template?.heroLayout || 'grid-carousel',
+        themeMode: pool.template?.themeMode || 'cyber-dark',
+        showVideo: pool.template?.showVideo !== false,
+        showAnalytics: pool.template?.showAnalytics !== false
+      },
+      contact: {
+        phone: d.contact?.tel || d.about?.tel || '',
+        email: d.contact?.email || d.about?.email || '',
+        address: d.contact?.addr || d.about?.addr || '',
+        map: d.contact?.map || ''
+      }
+    },
+    pageTexts: { },
+    products: (d.products || []).map(p => ({
+      name: p.name, desc: p.desc, img: p.img, specs: p.price || ''
+    })),
+    news: d.news || [],
+    csr: d.csr || [],
+    jobs: d.jobs || [],
+    images: imgs,
+    savedAt: new Date().toISOString()
+  };
+
+  // map textBlocks → pageTexts.home (รวมถึง element id ตรงๆ)
+  if (d.textBlocks) {
+    platform.pageTexts.home = {};
+    Object.keys(d.textBlocks).forEach(k => {
+      if (d.textBlocks[k]) platform.pageTexts.home[k] = d.textBlocks[k];
+    });
+  }
+
+  localStorage.setItem('nteq_platform_data', JSON.stringify(platform));
+  localStorage.setItem('nteq_dynamic_pool_v1', JSON.stringify(pool));
 }
 
 // ─── MODAL ───
